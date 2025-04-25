@@ -1,2 +1,3 @@
 # summerorbital
-orbital repo
+Project Name: Spaced Out
+By David and Dong Jun
