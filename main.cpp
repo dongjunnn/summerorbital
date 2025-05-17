@@ -4,7 +4,7 @@
 // Third-party library
 #include<SDL2/SDL.h>
 // Include GLAD 
-#include<glad/glad.h>
+//#include<glad/glad.h>
 
 int main(int argc, char* argv[]) {
   
@@ -32,6 +32,9 @@ int main(int argc, char* argv[]) {
       640,
       480,
       SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+
+  SDL_Renderer* renderer = nullptr;
+  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
   // OpenGL setup the graphics context 
   SDL_GLContext context;
