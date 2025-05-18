@@ -60,7 +60,7 @@ public:
         for (auto& c : components) c->draw();
     }
 
-    void draw() {}
+    // void draw() {}
     bool isActive() const { return active; }
     void destroy() { active = false; }
 

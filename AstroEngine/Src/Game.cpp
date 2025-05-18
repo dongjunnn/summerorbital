@@ -1,19 +1,15 @@
 #include "Game.h"
 #include "TextureManager.h"
-#include "GameObject.h"
 #include "Map.h"
+#include "ECS/Components.h"
+#include "Vector2D.h"
 
-#include "ECS.h"
-#include "Components.h"
-
-GameObject* player;
-GameObject* enemy;
 Map* map;
+Manager manager;
 
 SDL_Renderer* Game::renderer = nullptr;
-
-Manager manager;
-auto& newPlayer(manager.addEntity());
+SDL_Event Game::event;
+auto& player(manager.addEntity());
 
 Game::Game()
 {}
@@ -42,18 +38,18 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 		isRunning = true;
 	}
 
-	player =  new GameObject("AstroEngine/assets/test.png", 0, 0);
-	enemy =  new GameObject("AstroEngine/assets/test1.webp", 50, 50);
+	// player =  new GameObject("AstroEngine/assets/test.png", 0, 0);
+	// enemy =  new GameObject("AstroEngine/assets/test1.webp", 50, 50);
 	map = new Map();
 
-	newPlayer.addComponent<PositionComponent>();
-	newPlayer.addComponent<PositionComponent>().setPos(500, 500);
-
+	// ecs implementation
+	player.addComponent<TransformComponent>(50, 0);
+	player.addComponent<SpriteComponent>("AstroEngine/assets/ship.png");
+	player.addComponent<KeyboardController>();
 }
 
 void Game::handleEvents()
 {
-	SDL_Event event;
 
 	SDL_PollEvent(&event);
 
@@ -69,19 +65,16 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	player -> Update();
-	enemy -> Update();
+	manager.refresh();
 	manager.update();
-	std::cout << newPlayer.getComponent<PositionComponent>().x() << "," <<
-		newPlayer.getComponent<PositionComponent>().y() << std::endl;
+	
 }
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
 	map -> DrawMap();
-	player -> Render();
-	enemy -> Render();
+	manager.draw();
 	SDL_RenderPresent(renderer);
 }
 
