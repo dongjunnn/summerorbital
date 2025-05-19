@@ -14,16 +14,20 @@ public:
     void init(const char* title, int xpos, int ypos, int width, int height, bool fullscreen);
     
     void handleEvents();
-    void update();
-    void render();
+    void handleKeys();
+    void update(uint64_t dt);
+    void render(uint64_t dt, uint64_t acc);
     void clean();
 
+    
+
     bool running() { return isRunning; }
+
+    static SDL_Renderer *renderer;
 
 private:
     bool isRunning;
     SDL_Window *window;
-    SDL_Renderer *renderer;
 };
 
 

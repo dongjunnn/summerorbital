@@ -1,13 +1,13 @@
 #include "Game.hpp"
+#include "TextureManager.hpp"
+#include "GameObject.hpp"
 
-SDL_Texture *chitoTexture;
-SDL_Rect srcR, destR;
+SDL_Renderer *Game::renderer = nullptr;
 
-float x_pos; float y_pos;
-float x_vel = 300; float y_vel = 300;
-float x_acc = 0; float y_acc = 0;
+const Uint8 *keyState;  // keyboard state
 
-int WIDTH; int HEIGHT;
+GameObject* chito;
+int HEIGHT; int WIDTH;
 
 Game::Game()
 {}
@@ -17,11 +17,11 @@ Game::~Game()
 void Game::init(const char *title, int xpos, int ypos, int width, int height, bool fullscreen)
 {
     int flags = 0;
+    flags |= SDL_RENDERER_ACCELERATED;
     if (fullscreen)
     {
         flags = SDL_WINDOW_FULLSCREEN;
     }
-
     if (SDL_Init(SDL_INIT_VIDEO) == 0)
     {
         std::cout << "SDL Initialised" << std::endl;
@@ -32,7 +32,8 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height, bo
             std::cout << "Window Created" << std::endl;
         } else {SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not create: %s\n", SDL_GetError());}
 
-        renderer = SDL_CreateRenderer(window, -1, 0);
+        // presentvsync is a sad fix, delta time soon
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED|SDL_RENDERER_PRESENTVSYNC);
         if (renderer)
         {
             SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -42,28 +43,20 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height, bo
     }  
     else { isRunning = false; }
 
-    // Create surface from asset, create texture from surface, then free surface now that tex is generated
-    SDL_Surface *tmpSurface = IMG_Load("res/canvas.png");
-    if (!tmpSurface) {
-        printf("error creating surface %s\n", SDL_GetError());
-    }
-    chitoTexture = SDL_CreateTextureFromSurface(renderer, tmpSurface);
-    SDL_FreeSurface(tmpSurface);
-
-    SDL_QueryTexture(chitoTexture, NULL, NULL, &destR.w, &destR.h);
-    SDL_GetWindowSize(window, &width, &height);
-
+    // Getting window height
     WIDTH = width;
     HEIGHT = height;
+    
+    // chito
+    chito = new GameObject("res/canvas.png", 0, 0);
 
-    x_pos = (width - destR.w) /2;
-    y_pos = (height - destR.h)/2;
 }
 
 void Game::handleEvents()
 {
     SDL_Event event;
     SDL_PollEvent(&event);
+    struct telemetry tmp =  chito->getTelemetry();
     switch (event.type) {
         case SDL_QUIT:
             isRunning = false;
@@ -72,7 +65,8 @@ void Game::handleEvents()
                 switch (event.key.keysym.scancode)
                 {
                 case SDL_SCANCODE_SPACE:
-                    y_acc = 100;
+                    tmp.y_acc = 2000;
+                    chito->setTelemetry(&tmp);
                     break;
                 }
                 break;
@@ -80,54 +74,47 @@ void Game::handleEvents()
             switch (event.key.keysym.scancode)
             {
             case SDL_SCANCODE_SPACE:
-                y_acc = 0;
-                y_vel = 300;
+                tmp.y_acc = 0;
+                tmp.y_vel = 300;
+                chito->setTelemetry(&tmp);
                 break;
             }
             break;
     }
+    // std::cout << "Events";
 }
 
-void Game::update()
+void Game::handleKeys()
 {   
-// window bound collision detection
-    if (x_pos <= 0) {
-            x_pos = 0;
-            x_vel = -x_vel;
-        }
-    if (y_pos <= 0) {
-            y_pos = 0;
-            y_vel = -y_vel;
-        }
-    if (x_pos >= WIDTH - destR.w){
-            x_pos = WIDTH - destR.w;
-            x_vel = -x_vel;
-        }
-    if (y_pos >= HEIGHT - destR.h){
-            y_pos = HEIGHT - destR.h;
-            y_vel = -y_vel;
-        }
-    
-    // calculate new y velocity
-    y_vel += y_acc;
-    
-    // calculate position
-    x_pos += x_vel/60;
-    y_pos += y_vel/60;
-
-    // update sprite position
-    destR.x = (int) x_pos;
-    destR.y = (int) y_pos;
-    
-    // wait 1/60th of a second
-    SDL_Delay(1000/60);
+    struct telemetry tmp =  chito->getTelemetry();
+    keyState = SDL_GetKeyboardState(NULL);
+    if (keyState[SDL_SCANCODE_A]){  // scancode keeps keyboard key locations across keyboard layouts
+        tmp.angle_vel = -120;
+        chito->setTelemetry(&tmp);
+        // std::cout << tmp.angle_vel << std::endl;
+    } else if (keyState[SDL_SCANCODE_D])
+    {
+        tmp.angle_vel = 120;
+        chito->setTelemetry(&tmp);
+        // std::cout << tmp.angle_vel << std::endl;
+    } else {
+        tmp.angle_vel = 0;
+        chito->setTelemetry(&tmp);
+        // std::cout << tmp.angle_vel << std::endl;
+    }
+    // std::cout << "Keys" << std::endl;
 }
 
-void Game::render()
+void Game::update(uint64_t dt)
+{   
+   chito->Update(dt);
+}
+
+void Game::render(uint64_t dt, uint64_t acc)
 {   
     // double buffered
     SDL_RenderClear(renderer);
-    SDL_RenderCopy(renderer, chitoTexture, NULL, &destR); // third, fourth args take SDL_Rect to locate asset and destination coords resp.
+    chito->Render(dt, acc);
     SDL_RenderPresent(renderer);
 }
 
