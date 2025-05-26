@@ -59,7 +59,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	Map::LoadMap("AstroEngine/assets/p16x16.map", 16, 16);
 
 	player.addComponent<TransformComponent>(50, 0);
-	player.addComponent<SpriteComponent>("AstroEngine/assets/ship_idle.png", 4, 100);
+	// player.addComponent<SpriteComponent>("AstroEngine/assets/ship_idle.png", 4, 100);
+	player.addComponent<SpriteComponent>("AstroEngine/assets/player.png", true);
 	player.addComponent<KeyboardController>();
 	player.addComponent<ColliderComponent>("player");
 	player.addGroup(groupPlayers);

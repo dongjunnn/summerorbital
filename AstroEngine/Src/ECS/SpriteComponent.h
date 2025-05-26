@@ -3,6 +3,8 @@
 #include "Components.h"
 #include "SDL.h"
 #include "../TextureManager.h"
+#include "Animation.h"
+#include <map>
 
 class SpriteComponent : public Component
 {
@@ -16,17 +18,31 @@ private:
     int speed = 100;  // delay in frames in ms
 
 public:
+
+	int animIndex = 0; 
+
+    std::map<const char*, Animation> animations; 
+
+	SDL_RendererFlip spriteFlip = SDL_FLIP_NONE; // for flipping the sprite
+
     SpriteComponent() = default;
     SpriteComponent(const char* path)
     {
         setTex(path);
     }
 
-    SpriteComponent(const char* path, int nFrames, int mSpeed)
+    SpriteComponent(const char* path, bool isAnimated)
     {
-        animated = true;
-        frames = nFrames;
-        speed = mSpeed;
+        animated = isAnimated;
+
+        Animation idle = Animation(0, 3, 100);
+        Animation walk = Animation(1, 8, 100); 
+
+        animations.emplace("Idle", idle);
+        animations.emplace("Walk", walk);
+
+        Play("Idle");
+
         setTex(path);
     }
 
@@ -44,6 +60,8 @@ public:
     {
         transform = &entity->getComponent<TransformComponent>();
 
+		srcRect.y = animIndex * transform->height; // if animIndex is 0, then srcRect.y = 0, so it will start at the top of the sprite sheet
+
         srcRect.x = srcRect.y = 0;
         srcRect.w = transform -> width; 
         srcRect.h = transform -> height;
@@ -55,7 +73,7 @@ public:
         if (animated)
         {
             srcRect.x = srcRect.w * static_cast<int>((SDL_GetTicks() / speed) % frames);    // this is tied to framerate, taking note for when 
-                                                                                            // game tick is implemented 
+            srcRect.y = animIndex * srcRect.h;                                                                      // game tick is implemented 
         }
         destRect.x = static_cast<int>(transform->position.x);
         destRect.y = static_cast<int>(transform->position.y);
@@ -65,7 +83,14 @@ public:
 
     void draw() override
     {
-        TextureManager::Draw(texture, srcRect, destRect);
+        TextureManager::Draw(texture, srcRect, destRect, spriteFlip);
+    }
+
+    void Play(const char* animName)
+    {
+        frames = animations[animName].frames;
+        animIndex = animations[animName].index;
+        speed = animations[animName].speed;
     }
 
 };
