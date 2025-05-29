@@ -12,9 +12,18 @@ public:
 
     TransformComponent* transform;
 
+
     ColliderComponent(std::string t) 
     {
         tag = t;
+    }
+
+    ColliderComponent(std::string t, int xpos, int ypos, int size)
+    {
+        tag = t;
+        collider.x = xpos;
+        collider.y = ypos;
+        collider.h = collider.w = size;
     }
 
     void init() override
@@ -24,15 +33,16 @@ public:
             entity->addComponent<TransformComponent>();
         }
         transform = &entity->getComponent<TransformComponent>();
-
-        Game::colliders.push_back(this);
     }
 
     void update() override 
     {
-        collider.x = static_cast<int>(transform->position.x);
-        collider.y = static_cast<int>(transform->position.y);
-        collider.w = transform->width * transform->scale;
-        collider.h = transform->height * transform->scale;
+        if (tag != "terrain") 
+        {
+            collider.x = static_cast<int>(transform->position.x);
+            collider.y = static_cast<int>(transform->position.y);
+            collider.w = transform->width * transform->scale;
+            collider.h = transform->height * transform->scale;
+        }
     }
 };

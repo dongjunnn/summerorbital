@@ -21,14 +21,21 @@ public:
 	void render();
 	void clean();
 
-	static void AddTile(int id, int x, int y);
 	static SDL_Renderer* renderer;
 	static SDL_Event event;
-	static std::vector < ColliderComponent*> colliders;
+
+	enum groupLabels : std::size_t
+	{
+		groupMap,
+		groupPlayers,
+		groupColliders
+	};
 
 private:
 	bool isRunning = false;
 	int cnt = 0;
 	SDL_Window *window;
+
+	SDL_Texture* background;
 
 };

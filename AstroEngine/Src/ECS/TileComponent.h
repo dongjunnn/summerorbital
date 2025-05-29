@@ -8,44 +8,34 @@
 class TileComponent : public Component
 {
 public:
-	TransformComponent* transform;
-	SpriteComponent* sprite;
 
-	SDL_Rect tileRect;
-	int tileID;
-	const char* path;
+	SDL_Texture* texture;
+	SDL_Rect srcRect, dstRect;
+
 
 	TileComponent() = default;
 
-	TileComponent(int x, int y, int w, int h, int id)
+	~TileComponent()
 	{
-		tileRect.x = x;
-		tileRect.y = y;
-		tileRect.w = w;
-		tileRect.h = h;
-		tileID = id;
-
-		switch (tileID)
-		{
-		case 0:
-			path = "AstroEngine/assets/water.png";
-			break;
-		case 1:
-			path = "AstroEngine/assets/dirt.png";
-			break;
-		case 2:
-			path = "AstroEngine/assets/grass.png";
-			break;
-		}
+		SDL_DestroyTexture(texture);
 	}
 
-	void init() override
+	TileComponent(int srcX, int srcY, int xpos, int ypos, int tsize, int tscale, const char* path)
 	{
-		entity->addComponent<TransformComponent>((float)tileRect.x, (float)tileRect.y, tileRect.w, tileRect.h, 1);
-		transform = &entity->getComponent<TransformComponent>();
+		texture = TextureManager::LoadTexture(path);
 
-		entity->addComponent<SpriteComponent>(path);
-		sprite = &entity->getComponent<SpriteComponent>();
+		srcRect.x = srcX;
+		srcRect.y = srcY;
+		srcRect.w = srcRect.h = tsize;
+
+		dstRect.x = xpos;
+		dstRect.y = ypos;
+		dstRect.w = dstRect.h = tsize * tscale;
+	}
+
+	void draw() override
+	{
+		TextureManager::Draw(texture, srcRect, dstRect, SDL_FLIP_NONE);
 	}
 
 };
