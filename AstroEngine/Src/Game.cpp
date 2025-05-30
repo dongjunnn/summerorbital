@@ -4,12 +4,16 @@
 #include "ECS/Components.h"
 #include "Vector2D.h"
 #include "Collision.h"
+#include "AssetManager.h"
 
 Map* map;
 Manager manager;
 
 SDL_Renderer* Game::renderer = nullptr;
 SDL_Event Game::event;
+AssetManager* Game::assets = new AssetManager(&manager);
+
+bool Game::isRunning = false;
 
 auto& player(manager.addEntity());
 
@@ -23,7 +27,7 @@ Game::~Game()
 void Game::init(const char* title, int width, int height, bool fullscreen)
 {
 	int flags = 0;
-	
+
 	if (fullscreen)
 	{
 		flags = SDL_WINDOW_FULLSCREEN;
@@ -43,17 +47,24 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 
 	// player =  new GameObject("AstroEngine/assets/test.png", 0, 0);
 	// enemy =  new GameObject("AstroEngine/assets/test1.webp", 50, 50);
-	map = new Map("AstroEngine/assets/terrain.png", 1, 32);
+
+	assets->AddTexture("terrain", "AstroEngine/assets/terrain.png");
+	assets->AddTexture("player", "AstroEngine/assets/player.png");
+	assets->AddTexture("projectile", "AstroEngine/assets/test_projectile.png");
+
+	map = new Map("terrain", 1, 32);
 
 	// ecs implementation
 	map->LoadMap("AstroEngine/assets/map.map", 25, 20);
 
 	player.addComponent<TransformComponent>(500, 550);
 	// player.addComponent<SpriteComponent>("AstroEngine/assets/ship_idle.png", 4, 100);
-	player.addComponent<SpriteComponent>("AstroEngine/assets/player.png", true);
+	player.addComponent<SpriteComponent>("player", true);
 	player.addComponent<KeyboardController>();
 	player.addComponent<ColliderComponent>("player");
 	player.addGroup(groupPlayers);
+
+	assets->CreateProjectile(Vector2D(100,100), Vector2D(0.5, 0.2), 15, "projectile");
 
 	background = TextureManager::LoadTexture("AstroEngine/assets/lolol.png");  // background for fun; feel free to remove
 }
@@ -61,6 +72,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 auto& tiles(manager.getGroup(Game::groupMap));
 auto& players(manager.getGroup(Game::groupPlayers));
 auto& colliders(manager.getGroup(Game::groupColliders));
+auto& projectiles(manager.getGroup(Game::groupProjectiles));
 
 void Game::handleEvents()
 {
@@ -93,6 +105,14 @@ void Game::update()
 			player.getComponent<TransformComponent>().position = playerPos;
 		}
 	}
+
+	for (auto& p : projectiles)
+	{
+		if (Collision::AABB(playerCol, p->getComponent<ColliderComponent>().collider))
+		{
+			p->destroy();
+		}
+	}
 }
 
 
@@ -111,6 +131,10 @@ void Game::render()
 		c->draw();
 	}
 	for (auto& p : players)
+	{
+		p->draw();
+	}
+	for (auto& p : projectiles)
 	{
 		p->draw();
 	}

@@ -122,6 +122,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AstroEngine\Src\AssetManager.cpp" />
     <ClCompile Include="astroengine\src\Collision.cpp" />
     <ClCompile Include="AstroEngine\Src\ECS\ECS.cpp" />
     <ClCompile Include="astroengine\src\Game.cpp" />
@@ -132,11 +133,13 @@
     <ClCompile Include="astroengine\src\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AstroEngine\Src\AssetManager.h" />
     <ClInclude Include="astroengine\src\Collision.h" />
     <ClInclude Include="astroengine\src\ecs\ColliderComponent.h" />
     <ClInclude Include="astroengine\src\ecs\Components.h" />
     <ClInclude Include="astroengine\src\ecs\ECS.h" />
     <ClInclude Include="astroengine\src\ecs\KeyboardController.h" />
+    <ClInclude Include="AstroEngine\Src\ECS\ProjectileComponent.h" />
     <ClInclude Include="astroengine\src\ecs\SpriteComponent.h" />
     <ClInclude Include="AstroEngine\Src\ECS\TileComponent.h" />
     <ClInclude Include="astroengine\src\ecs\TransformComponent.h" />

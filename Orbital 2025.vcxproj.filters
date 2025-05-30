@@ -39,6 +39,9 @@
     <ClCompile Include="AstroEngine\Src\ECS\ECS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AstroEngine\Src\AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="astroengine\src\Collision.h">
@@ -291,6 +294,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\ECS\TileComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\AssetManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\ECS\ProjectileComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
