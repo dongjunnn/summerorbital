@@ -9,6 +9,7 @@ class KeyboardController : public Component
 public:
     TransformComponent *transform;
 	SpriteComponent* sprite;
+
     void init() override
     {
         transform = &entity->getComponent<TransformComponent>();
@@ -43,7 +44,30 @@ public:
                 break;
             }
         }
-
+        if (Game::event.type == SDL_KEYDOWN && Game::event.key.repeat == 0)
+        {
+            switch (Game::event.key.keysym.sym)
+            {
+            case SDLK_SPACE:
+                float proj_x;
+                float proj_y;
+                float proj_velx;
+                if (transform->velocity.x >= 0)
+                { 
+                    proj_velx = transform->velocity.x + 0.5f; 
+                    proj_x = transform->position.x + transform->width;
+                    proj_y = transform->position.y;
+                }
+                else 
+                { 
+                    proj_velx = transform->velocity.x - 0.5f; 
+                    proj_x = transform->position.x - transform->width;
+                    proj_y = transform->position.y;
+                }
+               
+                Game::assets->CreateProjectile(Vector2D(proj_x, proj_y), Vector2D(proj_velx, 0.0f), 15, "projectile");
+            }
+        }
         if (Game::event.type == SDL_KEYUP)
         {
             switch (Game::event.key.keysym.sym)
