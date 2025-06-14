@@ -1,0 +1,7 @@
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/enet.dir
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/edit_cache.dir
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/rebuild_cache.dir
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/list_install_components.dir
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/install.dir
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/install/local.dir
+/mnt/c/Users/dj8ch/Documents/github/summerorbital/backend/enet-1.3.18/build/CMakeFiles/install/strip.dir

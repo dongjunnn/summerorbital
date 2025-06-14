@@ -1,5 +1,6 @@
 #include <iostream>
 #include <enet/enet.h>
+#include <cstdio>
 
 int main(int argc, char ** argv)
 {
