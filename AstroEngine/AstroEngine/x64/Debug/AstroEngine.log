@@ -1,0 +1,21 @@
+﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(524,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+  Collision.cpp
+  Game.cpp
+C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\ECS\ECS.h(94,39): warning C4244: 'argument': conversion from '_Ty' to 'float', possible loss of data
+C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\ECS\ECS.h(94,39): warning C4244:         with
+C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\ECS\ECS.h(94,39): warning C4244:         [
+C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\ECS\ECS.h(94,39): warning C4244:             _Ty=int
+C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\ECS\ECS.h(94,39): warning C4244:         ]
+  (compiling source file '../Src/Game.cpp')
+      C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\ECS\ECS.h(94,39):
+      the template instantiation context (the oldest one first) is
+          C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine\Src\Game.cpp(61,9):
+          see reference to function template instantiation 'T &Entity::addComponent<TransformComponent,int,int>(int &&,int &&)' being compiled
+          with
+          [
+              T=TransformComponent
+          ]
+  
+  TextureManager.cpp
+  Generating Code...
+  AstroEngine.vcxproj -> C:\Users\dj8ch\Documents\github\summerorbital\AstroEngine.exe

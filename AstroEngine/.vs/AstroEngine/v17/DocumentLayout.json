@@ -1,0 +1,184 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\SpriteComponent.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\ECS\\SpriteComponent.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\TextureManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\TextureManager.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\Animation.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\ECS\\Animation.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\TextureManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\TextureManager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\KeyboardController.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\ECS\\KeyboardController.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\TileComponent.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\ECS\\TileComponent.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\Game.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\Game.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\SDL2_image-2.0.1\\include\\SDL_image.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\ECS.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Src\\ECS\\ECS.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 4,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TextureManager.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\TextureManager.h",
+              "RelativeDocumentMoniker": "Src\\TextureManager.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\TextureManager.h",
+              "RelativeToolTip": "Src\\TextureManager.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAABZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-26T13:39:44.999Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Animation.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\Animation.h",
+              "RelativeDocumentMoniker": "Src\\ECS\\Animation.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\Animation.h",
+              "RelativeToolTip": "Src\\ECS\\Animation.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-26T13:37:05.584Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "TextureManager.cpp",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\TextureManager.cpp",
+              "RelativeDocumentMoniker": "Src\\TextureManager.cpp",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\TextureManager.cpp",
+              "RelativeToolTip": "Src\\TextureManager.cpp",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABMAAABHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-05-25T12:39:32.8Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "SpriteComponent.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\SpriteComponent.h",
+              "RelativeDocumentMoniker": "Src\\ECS\\SpriteComponent.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\SpriteComponent.h",
+              "RelativeToolTip": "Src\\ECS\\SpriteComponent.h",
+              "ViewState": "AgIAAEwAAAAAAAAAAAApwFkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-26T12:53:05.32Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Game.cpp",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\Game.cpp",
+              "RelativeDocumentMoniker": "Src\\Game.cpp",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\Game.cpp",
+              "RelativeToolTip": "Src\\Game.cpp",
+              "ViewState": "AgIAADMAAAAAAAAAAAAAAD4AAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-05-26T13:21:59.112Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "KeyboardController.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\KeyboardController.h",
+              "RelativeDocumentMoniker": "Src\\ECS\\KeyboardController.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\KeyboardController.h",
+              "RelativeToolTip": "Src\\ECS\\KeyboardController.h",
+              "ViewState": "AgIAABIAAAAAAAAAAAAQwB8AAABIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-26T13:23:46.15Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "TileComponent.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\TileComponent.h",
+              "RelativeDocumentMoniker": "Src\\ECS\\TileComponent.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\TileComponent.h",
+              "RelativeToolTip": "Src\\ECS\\TileComponent.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-25T12:39:58.968Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Game.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\Game.h",
+              "RelativeDocumentMoniker": "Src\\Game.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\Game.h",
+              "RelativeToolTip": "Src\\Game.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-25T12:35:48.399Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "SDL_image.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\SDL2_image-2.0.1\\include\\SDL_image.h",
+              "RelativeDocumentMoniker": "..\\SDL2_image-2.0.1\\include\\SDL_image.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\SDL2_image-2.0.1\\include\\SDL_image.h",
+              "RelativeToolTip": "..\\SDL2_image-2.0.1\\include\\SDL_image.h",
+              "ViewState": "AgIAAHgAAAAAAAAAAAApwIQAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-25T12:56:04.025Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "ECS.h",
+              "DocumentMoniker": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\ECS.h",
+              "RelativeDocumentMoniker": "Src\\ECS\\ECS.h",
+              "ToolTip": "C:\\Users\\dj8ch\\Documents\\github\\summerorbital\\AstroEngine\\Src\\ECS\\ECS.h",
+              "RelativeToolTip": "Src\\ECS\\ECS.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-25T12:34:23.806Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -4,7 +4,7 @@
 #include "ECS/Components.h"
 #include <fstream>
 
-extern Manager manager;
+// extern Manager manager;
 
 Map::Map(std::string tID, int mscale, int tsize) : texID(tID), mapScale(mscale), tileSize(tsize)
 {
@@ -37,7 +37,7 @@ void Map::LoadMap(std::string path, int sizeX, int sizeY)
 
 			if (index != 24)
 			{
-				auto& terrainCol(manager.addEntity());
+				auto& terrainCol(Game::manager.addEntity() );
 				terrainCol.addComponent<ColliderComponent>("terrain", x * (tileSize * mapScale), y * (tileSize * mapScale), tileSize * mapScale);
 				terrainCol.addGroup(Game::groupColliders);
 			}
@@ -52,7 +52,7 @@ void Map::LoadMap(std::string path, int sizeX, int sizeY)
 
 void Map::AddTile(int srcX, int srcY, int xpos, int ypos)
 {
-	auto& tile(manager.addEntity());
+	auto& tile(Game::manager.addEntity()); 
 	tile.addComponent<TileComponent>(srcX, srcY, xpos, ypos, tileSize, mapScale, texID);
 	tile.addGroup(Game::groupMap);
 }
