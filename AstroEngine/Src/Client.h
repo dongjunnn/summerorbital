@@ -1,6 +1,11 @@
 #pragma once
 #include <enet/enet.h>
-#include "Game.h"
+#include <SDL.h>
+#include <SDL_image.h>
+#include "AssetManager.h"
+#include "GameStates/ClientStates/ClientState.h"
+
+class AssetManager;
 
 class Client {
 public:
@@ -9,13 +14,24 @@ public:
 
     bool init();
     void run();
+    void changeState(ClientState* newState);
+
+    SDL_Renderer* renderer;
+    SDL_Event event;
+    AssetManager* assets;   // assets belongs to the client now
+
+    ENetPeer* getServerPeer() const { return serverPeer; }      // again if theres a better way
+    bool isRunning = false; // if theres a better way to do this go ahead
 
 private:
     ENetHost* clientHost;
     ENetPeer* serverPeer;
-    Game game; // The Client owns the Game engine
-    bool isRunning = false;
 
-    void handleInput();
-    void updateFromServer();
+    SDL_Window* window;
+
+    ClientState* currentState = nullptr;
+
+    // can change this if you want
+    void createWindow(const char* title, int width, int height, bool fullscreen);
+
 };

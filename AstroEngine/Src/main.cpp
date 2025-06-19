@@ -40,6 +40,8 @@
 #include "Client.h" 
 #include <cstring>
 
+#include <enet/enet.h>
+
 // We no longer need to include Game.h here, as the
 // Client and Server classes manage their own needs.
 

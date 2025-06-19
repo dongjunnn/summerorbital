@@ -2,18 +2,21 @@
 
 #include "Server.h"
 #include <iostream>
-#include "ECS/Components.h"
 #include "Packet.h"
 #include <cstring>    
 #include "Collision.h"
 
 // Notice the server doesn't include anything related to TextureManager or rendering.
 
-Server::Server() : serverHost(nullptr), map(nullptr) {}
+Server::Server() : serverHost(nullptr) {}
 
 Server::~Server()
 {
-    delete map;
+    if (currentState) {
+        currentState->onExit(*this);
+        delete currentState;
+    }
+
     if (serverHost != nullptr) {
         enet_host_destroy(serverHost);
     }
@@ -46,17 +49,17 @@ bool Server::init()
     return true;
 }
 
-void Server::setupGame()
+void Server::setupGame()        // can we consolidate this with server init?
 {
     std::cout << "[SERVER] Setting up game world..." << std::endl;
-    // This is the logic moved from your original Game::init()
-    // The server needs to load the map to understand the level layout and collisions.
-    // This means the server executable needs to be able to find the 'assets' folder.
-    map = new Map("terrain", 3, 32);
-    map->LoadMap("assets/map.map", 25, 20);
-
     // For now, we won't create any player entities. The server will do that
     // when a client connects. Let's just log that the world is ready.
+
+    // map lives in server playstate now, here we set the initial state of the server
+    // to be running the game, we can change this to other stuff next time,
+    // like a map selector if we go there
+    changeState(new PlayState_S());     
+
     std::cout << "[SERVER] Game world created." << std::endl;
 }
 
@@ -74,64 +77,12 @@ void Server::run()
         // Check for new network events (connections, packets, disconnections)
         while (enet_host_service(serverHost, &event, 0) > 0)
         {
-            switch (event.type)
-            {
-            case ENET_EVENT_TYPE_CONNECT:
-            {
-                std::cout << "[SERVER] A new client connected from "
-                    << event.peer->address.host << ":" << event.peer->address.port << std::endl;
-                // Later, this is where you will create a player entity for this client
-                auto& player(manager.addEntity());
-                player.addComponent<TransformComponent>(400, 320, 32, 32, 2); // Spawn at a default position
-                player.addComponent<ColliderComponent>("player");
-                player.addGroup(Game::groupPlayers);
-                event.peer->data = (void*)((uintptr_t)player.getID());
-                std::cout << "[SERVER] Created player with ID " << player.getID() << " for the new client." << std::endl;
-            
-                break;  
-            }
-
-            case ENET_EVENT_TYPE_RECEIVE:
-            {
-                std::cout << "[SERVER] Received a packet of length "
-                    << event.packet->dataLength << std::endl;
-                // This is where you will process player input
-                uint32_t playerID = (uintptr_t)event.peer->data;
-                Entity& player = manager.getEntity(playerID);
-
-                PlayerInputPacket input;
-                memcpy(&input, event.packet->data, sizeof(PlayerInputPacket));
-
-                // Update the player's velocity based on the input
-                auto& transform = player.getComponent<TransformComponent>();
-                transform.velocity = Vector2D(0, 0); // Reset velocity
-                if (input.up) transform.velocity.y = -1;
-                if (input.down) transform.velocity.y = 1;
-                if (input.left) transform.velocity.x = -1;
-                if (input.right) transform.velocity.x = 1;
-
-                enet_packet_destroy(event.packet);
-                break;
-            }
-
-            case ENET_EVENT_TYPE_DISCONNECT:
-            {
-                std::cout << "[SERVER] A client disconnected." << std::endl;
-                // Later, this is where you will destroy the player entity for this client
-                if (event.peer->data != NULL) {
-                    uint32_t playerID = (uintptr_t)event.peer->data;
-                    Entity& player = manager.getEntity(playerID);
-                    player.destroy(); // Remove the player entity from the ECS
-                    std::cout << "[SERVER] Destroyed player with ID " << playerID << "." << std::endl;
-                }
-                break;
-            }
-            }
+            currentState->handleEnetEvent(*this, event);    // the logic is now up to server states to decide
         }
 
         // --- Game Logic Update ---
-        update();
-
+        currentState->update(*this);
+        currentState->broadcastStates(*this);
         // --- Timing ---
         int frameTime = SDL_GetTicks() - frameStart;
         if (frameDelay > frameTime) {
@@ -140,6 +91,20 @@ void Server::run()
     }
 }
 
+void Server::changeState(ServerState* newState)
+{
+    // we can change this to preserve states next time if we want
+    if (currentState)
+    {
+        currentState->onExit(*this);
+        delete currentState;
+    }
+    currentState = newState;
+
+    currentState->onEnter(*this);
+}
+
+/* now lives in systems
 void Server::update()
 {
     // These two lines run the component updates (e.g., moving entities based on velocity)
@@ -192,7 +157,9 @@ void Server::update()
     // After all logic is done, send the final, corrected positions to all clients.
     broadcastGameState();
 }
+*/
 
+/*
 void Server::broadcastGameState()
 {
     // This function will eventually package up the game state (like entity positions)
@@ -221,3 +188,4 @@ void Server::broadcastGameState()
         enet_host_broadcast(serverHost, 0, packet);
     }
 }
+*/
