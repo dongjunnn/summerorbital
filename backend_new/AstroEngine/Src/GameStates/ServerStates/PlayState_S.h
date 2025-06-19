@@ -1,0 +1,17 @@
+#pragma once
+#include "ServerState.h"
+#include "../../Map.h"
+
+
+class PlayState_S : public ServerState
+{
+public:
+	void onEnter(Server& server) override;
+	void handleEnetEvent(Server& server, ENetEvent& event) override;
+	void update(Server& server) override;
+	void broadcastStates(Server& server) override;
+	void onExit(Server& server) override;
+
+private:
+	Map* map;
+};
