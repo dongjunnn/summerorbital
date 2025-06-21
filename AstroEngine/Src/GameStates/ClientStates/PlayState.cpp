@@ -1,6 +1,8 @@
 #include "../../Components/Components.h"
 #include "PlayState.h"
+#include "../../Packet.h" 
 #include "../../Map.h"
+#include <cstring>
 
 void PlayState::onEnter(Client& client)
 {
@@ -29,6 +31,7 @@ void PlayState::handleInput(Client& client)
 	if (keystates[SDL_SCANCODE_A]) input.left = true;
 	if (keystates[SDL_SCANCODE_D]) input.right = true;
 
+    if (keystates[SDL_SCANCODE_SPACE]) input.fireButtonPressed = true;
 	// Create an ENet packet to send the input state.
 	// The flag '0' (or ENET_PACKET_FLAG_UNSEQUENCED) means this is an unreliable packet.
 	// This is good for movement data that is sent every frame.
@@ -49,66 +52,48 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
         break;
     case ENET_EVENT_TYPE_RECEIVE:
     {
-        // This is the most important part of the client.
-        // We've received a game state packet from the server.
+        // Check for projectile creation
+        if (event.packet->dataLength == sizeof(PacketProjectileCreated))
+        {
+            PacketProjectileCreated projectilePacket;
+            memcpy(&projectilePacket, event.packet->data, sizeof(PacketProjectileCreated));
 
-        // 1. Create a vector to hold the list of player states from the packet.
-        // We calculate the size of the vector by dividing the total packet size
-        // by the size of a single PlayerState object.
-        std::vector<PlayerState> playerStates(event.packet->dataLength / sizeof(PlayerState));
+            // Create the sprite for the projectile
+            SpriteComponent projectileSprite { 
+                client.assets->GetTexture("orb"), 
+                {0,0,16,16}, 
+                {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 16, 16} 
+            };
+            
+            // 1. Create a projectile locally, which gives us a NEW client-side ID
+            Entity clientID = scene.CreateProjectile(projectilePacket.position, projectilePacket.velocity, projectileSprite);
 
-        // 2. Copy the raw data from the packet into our vector.
-        memcpy(playerStates.data(), event.packet->data, event.packet->dataLength);
+            // 2. Store the mapping from the server's ID to our new client ID
+            serverToClientEntityMap[projectilePacket.entityID] = clientID;
+        }
+        // Check for game state updates
+        else if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(PlayerState) == 0)
+        {
+            std::vector<PlayerState> playerStates(event.packet->dataLength / sizeof(PlayerState));
+            memcpy(playerStates.data(), event.packet->data, event.packet->dataLength);
 
-        // 3. Process each state update.
-        for (const auto& serverState : playerStates) {  // this part is abit iffy
-            // Check if we already have a local entity for this player
-            if (scene.isActive(serverState.entityID)) {
-                Entity localPlayer = serverState.entityID;
-
-                // --- START OF FIX ---
-                // Check if the entity has the TransformComponent before trying to get it.
-                // This prevents accessing invalid memory if the component is somehow missing.
-                if (scene.HasComponent<TransformComponent>(localPlayer)) { //
-                    TransformComponent& transform = scene.GetEntityData<TransformComponent>(localPlayer); //
-                    transform.position.x = serverState.x; //
-                    transform.position.y = serverState.y; //
+            for (const auto& serverState : playerStates) {
+                // 3. Check if we have a mapping for this server ID
+                if (serverToClientEntityMap.count(serverState.entityID)) {
+                    Entity clientID = serverToClientEntityMap.at(serverState.entityID);
+                    TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
+                    transform.position.x = serverState.x;
+                    transform.position.y = serverState.y;
+                } else {
+                    // This is a new player we haven't seen. Create it and store the mapping.
+                    SpriteComponent playerSprite { 
+                        client.assets->GetTexture("player"),
+                        {0,0,32,32},
+                        {(int)serverState.x, (int)serverState.y, 32, 32}
+                    };
+                    Entity clientID = scene.CreatePlayer({serverState.x, serverState.y}, playerSprite);
+                    serverToClientEntityMap[serverState.entityID] = clientID;
                 }
-                else {
-                    // This scenario indicates an unexpected state where an existing entity
-                    // is missing a critical component. For robustness, we re-add it.
-                    std::cerr << "[CLIENT] Warning: Entity ID " << serverState.entityID
-                        << " found, but missing TransformComponent. Re-adding it." << std::endl;
-                    ComponentBitSet oldSig = scene.GetEntitySignature(localPlayer);
-                    scene.AddComponent<TransformComponent>(localPlayer);
-                    scene.SetEntityData<TransformComponent>(localPlayer, { Vector2D{serverState.x, serverState.y} } );
-                    scene.UpdateViews(localPlayer, oldSig, scene.GetEntitySignature(localPlayer));
-
-                    // Also ensure SpriteComponent is there if it's expected for players
-                    if (!scene.HasComponent<SpriteComponent>(localPlayer)) { //
-                        ComponentBitSet oldSig = scene.GetEntitySignature(localPlayer);
-                        scene.AddComponent<SpriteComponent>(localPlayer);
-                        scene.SetEntityData<SpriteComponent>(localPlayer, SpriteComponent
-                                                            { client.assets->GetTexture("player"),
-                                                              { 0,0,32,32 },
-                                                              { (int)serverState.x, (int)serverState.y, 32, 32 }
-                                                            });     // sry for syntax, helper function soon
-                        scene.UpdateViews(localPlayer, oldSig, scene.GetEntitySignature(localPlayer));
-                    }
-                }
-                // --- END OF FIX ---
-            }
-            else {
-                // If no, this is a new player we haven't seen before. Create a local
-                // representation of it.
-                std::cout << "[CLIENT] New player detected with ID " << serverState.entityID << ". Creating local entity." << std::endl;
-
-                // Create the entity with the SAME ID as the one on the server
-                Entity localPlayer = scene.CreatePlayer({serverState.x, serverState.y}, SpriteComponent
-                                                        { client.assets->GetTexture("player"),
-                                                          { 0,0,32,32 },
-                                                          { (int)serverState.x, (int)serverState.y, 32, 32}
-                                                        });  // createPlayer calls update views by itself
             }
         }
 

@@ -1,51 +1,54 @@
 #include "SceneInstance.h"
 
+// Client-side implementation (generates a new local ID)
 Entity SceneInstance::CreateProjectile(const Vector2D position, const Vector2D velocity, const SpriteComponent sprite)
 {
-	Entity proj = CreateEntity();
+    Entity proj = CreateEntity();
 
-	AddComponent<TransformComponent>(proj);
-	AddComponent<VelocityComponent>(proj);
-	AddComponent<SpriteComponent>(proj);
-	AddComponent<ColliderComponent>(proj);
-	AddComponent<ProjectileComponent>(proj);	// currently just a flag, will add effects later
+    // Step 1: Add the components (one argument)
+    AddComponent<TransformComponent>(proj);
+    AddComponent<VelocityComponent>(proj);
+    AddComponent<SpriteComponent>(proj);
+    AddComponent<ProjectileComponent>(proj);
 
-	TransformComponent tfm = { Vector2D { position.x, position.y } };
-	VelocityComponent vel = { Vector2D { velocity.x, velocity.y } };
-	ColliderComponent col = { { position.x, position.y, sprite.dstRect.w, sprite.dstRect.h } };
+    // Step 2: Set the data for each component
+    SetEntityData<TransformComponent>(proj, { position });
+    SetEntityData<VelocityComponent>(proj, { velocity });
+    SetEntityData<SpriteComponent>(proj, sprite);
 
-	SetEntityData<TransformComponent>(proj, tfm);
-	SetEntityData<VelocityComponent>(proj, vel);
-	SetEntityData<SpriteComponent>(proj, sprite);
-	SetEntityData<ColliderComponent>(proj, col);
+    // Update the views so systems can see this new entity
+    ComponentBitSet newSig = GetEntitySignature(proj);
+    UpdateViews(proj, ComponentBitSet{}, newSig);
 
-	ComponentBitSet newSig = GetEntitySignature(proj);		// updating views
-	UpdateViews(proj, ComponentBitSet{}, newSig);			// many problems in rendering are because its not in a view
-
-	return proj;
+    return proj; // Return the new client-side ID
 }
 
+// Server-side implementation (generates a new server ID)
 Entity SceneInstance::CreateProjectile(const Vector2D position, const Vector2D velocity, const Vector2D colDimensions)
 {
-	Entity proj = CreateEntity();
+    Entity proj = CreateEntity();
 
-	AddComponent<TransformComponent>(proj);
-	AddComponent<VelocityComponent>(proj);
-	AddComponent<ColliderComponent>(proj);
-	AddComponent<ProjectileComponent>(proj);	// currently just a flag, will add effects later
+    // Step 1: Add the components
+    AddComponent<TransformComponent>(proj);
+    AddComponent<VelocityComponent>(proj);
+    AddComponent<ColliderComponent>(proj);
+    AddComponent<ProjectileComponent>(proj);
 
-	TransformComponent tfm = { Vector2D { position.x, position.y } };
-	VelocityComponent vel = { Vector2D { velocity.x, velocity.y } };
-	ColliderComponent col = { { position.x, position.y, colDimensions.x, colDimensions.y } };
+    // Step 2: Set the data
+    SetEntityData<TransformComponent>(proj, { position });
+    SetEntityData<VelocityComponent>(proj, { velocity });
+    ColliderComponent col = { { 
+        static_cast<int>(position.x), 
+        static_cast<int>(position.y), 
+        static_cast<int>(colDimensions.x), 
+        static_cast<int>(colDimensions.y) 
+    } };
+    SetEntityData<ColliderComponent>(proj, col);
 
-	SetEntityData<TransformComponent>(proj, tfm);
-	SetEntityData<VelocityComponent>(proj, vel);
-	SetEntityData<ColliderComponent>(proj, col);
+    ComponentBitSet newSig = GetEntitySignature(proj);
+    UpdateViews(proj, ComponentBitSet{}, newSig);
 
-	ComponentBitSet newSig = GetEntitySignature(proj);		// updating views
-	UpdateViews(proj, ComponentBitSet{}, newSig);
-
-	return proj;
+    return proj;
 }
 
 Entity SceneInstance::CreatePlayer(const Vector2D position, const SpriteComponent sprite)

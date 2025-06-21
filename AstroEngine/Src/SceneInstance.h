@@ -18,10 +18,10 @@ public:
 	}
 
 	virtual ~SceneInstance() = default;
-
+	
 	Entity CreateProjectile(const Vector2D position, const Vector2D velocity, const SpriteComponent sprite);
 	
-	Entity CreateProjectile(const Vector2D position, const Vector2D velocity, const Vector2D colDimensions);
+    Entity CreateProjectile(const Vector2D position, const Vector2D velocity, const Vector2D colDimensions);
 
 	Entity CreatePlayer(const Vector2D position, const SpriteComponent sprite);
 

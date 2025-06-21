@@ -22,9 +22,9 @@ void Map::LoadMap(std::string path, SceneInstance& scene, int sizeX, int sizeY)
 		for (int x = 0; x < sizeX; x++)
 		{
 			mapFile.get(c);
-			srcY = atoi(&c);
+			srcY = c - '0'; 
 			mapFile.get(c);
-			srcX = atoi(&c);
+			srcX = c - '0'; 
 
 			int index = srcY * 10 + srcX;
 			srcY = (index / 8) * tileSize;
@@ -44,7 +44,7 @@ void Map::LoadMap(std::string path, SceneInstance& scene, int sizeX, int sizeY)
 				scene.AddComponent<TileComponent>(entity);	// tilecomponent has no data, just a flag
 				
 				TransformComponent tfm = { Vector2D(x * (tileSize * mapScale), y * (tileSize * mapScale)) };
-				ColliderComponent cdr = { x * (tileSize * mapScale), y * (tileSize * mapScale), tileSize * mapScale, tileSize * mapScale };
+				ColliderComponent cdr = { { x * (tileSize * mapScale), y * (tileSize * mapScale), tileSize * mapScale, tileSize * mapScale } };
 
 				scene.SetEntityData<TransformComponent>(entity, tfm);
 				scene.SetEntityData<ColliderComponent>(entity, cdr);
@@ -72,9 +72,9 @@ void Map::LoadMap(std::string path, SceneInstance& scene, AssetManager& assets, 
 		for (int x = 0; x < sizeX; x++)
 		{
 			mapFile.get(c);
-			srcY = atoi(&c);
+			srcY = c - '0'; 
 			mapFile.get(c);
-			srcX = atoi(&c);
+			srcX = c - '0';
 
 			int index = srcY * 10 + srcX;
 			srcY = (index / 8) * tileSize;
@@ -100,7 +100,7 @@ void Map::LoadMap(std::string path, SceneInstance& scene, AssetManager& assets, 
 					{srcX, srcY, tileSize, tileSize},
 					{x * (tileSize * mapScale), y * (tileSize * mapScale), tileSize * mapScale, tileSize * mapScale}
 				};
-				ColliderComponent cdr = { x * (tileSize * mapScale), y * (tileSize * mapScale), tileSize * mapScale, tileSize * mapScale };
+				ColliderComponent cdr = { { x * (tileSize * mapScale), y * (tileSize * mapScale), tileSize * mapScale, tileSize * mapScale } };
 
 				scene.SetEntityData<TransformComponent>(entity, tfm);
 				scene.SetEntityData<SpriteComponent>(entity, spr);

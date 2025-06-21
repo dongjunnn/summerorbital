@@ -6,6 +6,7 @@ struct PlayerInputPacket {
     bool down = false;
     bool left = false;
     bool right = false;
+    bool fireButtonPressed = false;
 };
 
 
@@ -13,4 +14,10 @@ struct PlayerState {
     uint32_t entityID; // The unique ID of the entity
     float x;
     float y;
+};
+
+struct PacketProjectileCreated {
+    uint32_t entityID;
+    Vector2D position;
+    Vector2D velocity;
 };

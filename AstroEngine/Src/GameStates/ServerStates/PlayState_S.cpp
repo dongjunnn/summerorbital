@@ -1,5 +1,7 @@
 #include "PlayState_S.h"
 #include "../../Server.h"
+#include "../../Map.h"
+#include <cstring>
 
 void PlayState_S::onEnter(Server& server)
 {
@@ -44,6 +46,26 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         if (input.down) vel.velocity.y = 1;
         if (input.left) vel.velocity.x = -1;
         if (input.right) vel.velocity.x = 1;
+
+        if (input.fireButtonPressed) {
+            TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
+            Vector2D projectileVelocity = { 5.0f, 0.0f }; // can change this velocity TODO
+
+            Entity newProjectileID = scene.CreateProjectile(playerTransform.position, projectileVelocity, {16, 16});
+
+            PacketProjectileCreated projectilePacket;
+            projectilePacket.entityID = newProjectileID;
+            projectilePacket.position = playerTransform.position;
+            projectilePacket.velocity = projectileVelocity;
+
+            ENetPacket* packet = enet_packet_create(&projectilePacket,
+                sizeof(PacketProjectileCreated),
+                ENET_PACKET_FLAG_RELIABLE);
+
+            enet_host_broadcast(server.getServerHost(), 0, packet);
+        }
+
+
 
         enet_packet_destroy(event.packet);
         break;
