@@ -114,7 +114,7 @@ void PlayState::update(Client& client)	// updating internal state of client
 	collisionSystem.updateColliderPositions();
 	collisionSystem.checkCollision();
 	collisionSystem.resolveCollision();		// resolve collisions pushes back entities if they overlap in movementsystem
-	entityCleanSystem.cleanProjectiles();
+	// entityCleanSystem.cleanProjectiles();
 }
 
 void PlayState::render(Client& client)

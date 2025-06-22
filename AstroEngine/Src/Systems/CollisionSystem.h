@@ -7,7 +7,8 @@
 enum class CollisionType
 {
 	PlayerTile,
-	PlayerProjectile
+	PlayerProjectile,
+	ProjectileTile 
 };
 
 struct CollisionEvent
@@ -84,6 +85,7 @@ public:
 				SDL_Rect& tcol = scene.GetEntityData<ColliderComponent>(colEvent.b).collider;
 
 				TransformComponent& ptfm = scene.GetEntityData<TransformComponent>(colEvent.a);
+				VelocityComponent& pvel = scene.GetEntityData<VelocityComponent>(colEvent.a); 
 
 				// finding the distance between centers
 				int dx = (pcol.x + pcol.w / 2) - (tcol.x + tcol.w / 2);
@@ -98,12 +100,14 @@ public:
 					int correction = (dx > 0) ? overlapX : -overlapX;		// hehe funny c++ syntax
 					pcol.x += correction;									// move the player by the overlap amount
 					ptfm.position.x += correction;
+					pvel.velocity.x = 0; 
 				}
 				else
 				{
 					int correction = (dy > 0) ? overlapY : -overlapY;
 					pcol.y += correction;
 					ptfm.position.y += correction;
+					pvel.velocity.y = 0;
 				}
 				break;
 			}

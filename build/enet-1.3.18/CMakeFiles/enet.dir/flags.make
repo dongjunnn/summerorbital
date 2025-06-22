@@ -6,5 +6,5 @@ C_DEFINES = -DHAS_FCNTL=1 -DHAS_GETADDRINFO=1 -DHAS_GETHOSTBYADDR_R=1 -DHAS_GETH
 
 C_INCLUDES = -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/enet-1.3.18/include
 
-C_FLAGS =   -Wno-error
+C_FLAGS = -g   -Wno-error
 

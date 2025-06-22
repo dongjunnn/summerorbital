@@ -1,7 +1,15 @@
 #pragma once
 #include <cstdint>
 
+enum class PacketType : uint8_t {
+    PLAYER_INPUT,
+    PROJECTILE_CREATED
+};
+
+
+
 struct PlayerInputPacket {
+    //PacketType type = PacketType::PLAYER_INPUT;
     bool up = false;
     bool down = false;
     bool left = false;
@@ -17,6 +25,7 @@ struct PlayerState {
 };
 
 struct PacketProjectileCreated {
+    //PacketType type = PacketType::PROJECTILE_CREATED;
     uint32_t entityID;
     Vector2D position;
     Vector2D velocity;

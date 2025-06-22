@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/usr/include/SDL2 -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/enet-1.3.18/include -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/Components -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/ECS -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/ECS/Net -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/GameStates/ClientStates -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/GameStates/ServerStates -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/GameStates/Shared -I/mnt/c/Users/dj8ch/Documents/github/summerorbital/AstroEngine/Src/Systems
 
-CXX_FLAGS = -std=gnu++17
+CXX_FLAGS = -g -std=gnu++17
 
