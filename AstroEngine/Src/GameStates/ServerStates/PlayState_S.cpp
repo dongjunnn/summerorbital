@@ -30,8 +30,10 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
 
     case ENET_EVENT_TYPE_RECEIVE:
     {
-        std::cout << "[SERVER] Received a packet of length "
-            << event.packet->dataLength << std::endl;
+        /* std::cout << "[SERVER] Received a packet of length "
+            << event.packet->dataLength << std::endl;  */
+
+
         // This is where you will process player input
         Entity playerID = (uintptr_t)event.peer->data;
 
@@ -51,11 +53,12 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
             Vector2D projectileVelocity = { 5.0f, 0.0f }; // can change this velocity TODO
 
-            Entity newProjectileID = scene.CreateProjectile(playerTransform.position, projectileVelocity, {16, 16});
-
+            Entity newProjectileID = scene.CreateProjectile((playerTransform.position + Vector2D(33.0f, 0.0f)), // offset spawn position so it
+                                                             projectileVelocity, {32, 32});                   // doesnt collide with player
+                                                                                                              // that spawned it
             PacketProjectileCreated projectilePacket;
             projectilePacket.entityID = newProjectileID;
-            projectilePacket.position = playerTransform.position;
+            projectilePacket.position = playerTransform.position + Vector2D(33.0f, 0.0f);
             projectilePacket.velocity = projectileVelocity;
 
             ENetPacket* packet = enet_packet_create(&projectilePacket,
@@ -92,6 +95,7 @@ void PlayState_S::update(Server& server)
     collisionSystem.checkCollision();
     collisionSystem.resolveCollision();		// resolve collisions pushes back entities if they overlap in movementsystem
     entityCleanSystem.cleanProjectiles();
+    entityCleanSystem.clearDefeatedPlayers();
 }
 
 void PlayState_S::broadcastStates(Server& server)
@@ -99,6 +103,7 @@ void PlayState_S::broadcastStates(Server& server)
     // This function will eventually package up the game state (like entity positions)
     // and send it to all clients. For now, we can leave it empty.
     std::vector<PlayerState> playerStates;
+    std::vector<ProjectileState> projectileStates;
 
     auto& players = scene.GetView<PlayerComponent>();
     for (Entity player : players)
@@ -107,7 +112,17 @@ void PlayState_S::broadcastStates(Server& server)
         state.entityID = player;
         state.x = scene.GetEntityData<TransformComponent>(player).position.x;   // rip 
         state.y = scene.GetEntityData<TransformComponent>(player).position.y;   // its cache miss time
-        playerStates.push_back(state);                                          // damn this ecs needs work
+        playerStates.push_back(state);                                          // damn this ecs needs work               
+    }
+
+    auto& projectiles = scene.GetView<ProjectileComponent>();
+    for (Entity projectile : projectiles)
+    {
+        ProjectileState state;
+        state.projectileID = projectile;
+        state.x = scene.GetEntityData<TransformComponent>(projectile).position.x;   // rip 
+        state.y = scene.GetEntityData<TransformComponent>(projectile).position.y;   // its cache miss time
+        projectileStates.push_back(state);                                              // but really no feels to refactor
     }
 
     // Only send a packet if there are players to update
@@ -118,6 +133,19 @@ void PlayState_S::broadcastStates(Server& server)
         // ENET_PACKET_FLAG_RELIABLE means the packet is guaranteed to arrive.
         ENetPacket* packet = enet_packet_create(playerStates.data(),
             playerStates.size() * sizeof(PlayerState),
+            ENET_PACKET_FLAG_RELIABLE);
+
+        // Send the packet to all connected clients on channel 0.
+        enet_host_broadcast(server.getServerHost(), 0, packet);
+    }
+
+    if (!projectileStates.empty())
+    {
+        // Create an ENet packet.
+        // The data is the start of our vector, and the length is the total size in bytes.
+        // ENET_PACKET_FLAG_RELIABLE means the packet is guaranteed to arrive.
+        ENetPacket* packet = enet_packet_create(projectileStates.data(),
+            projectileStates.size() * sizeof(ProjectileState),
             ENET_PACKET_FLAG_RELIABLE);
 
         // Send the packet to all connected clients on channel 0.

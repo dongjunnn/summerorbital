@@ -265,5 +265,6 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
     assets->AddTexture("terrain", "assets/terrain.png", renderer);
     assets->AddTexture("player", "assets/player.png", renderer);
     assets->AddTexture("orb", "assets/orb.png", renderer);
-
+    assets->AddTexture("healthBorder", "assets/HealthBar.png", renderer);
+    assets->AddTexture("healthMeter", "assets/HealthMeter.png", renderer);
 }

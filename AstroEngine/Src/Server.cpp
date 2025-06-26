@@ -71,7 +71,6 @@ void Server::run()
 
     while (isRunning) {
         Uint32 frameStart = SDL_GetTicks(); // We can use SDL timing functions
-
         // --- Network Handling ---
         ENetEvent event;
         // Check for new network events (connections, packets, disconnections)

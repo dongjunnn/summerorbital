@@ -35,6 +35,14 @@ public:
 
 	T& GetEntityDatafromArray(Entity entity)
 	{
+		if (componentIndex[entity] <= 0 && componentIndex[entity] >= componentDense.size())
+		{
+			std::cerr << "[OOPS] Catastrophic error!" << std::endl;
+			std::cout << "Entity " << entity << " tried to access something it didnt have" << std::endl;
+			std::cout << "componentIndex[entity]: " << componentIndex[entity] << std::endl;
+			std::cout << "componentDense size: " << componentDense.size() << std::endl;
+			throw std::runtime_error("oops");
+		}
 		return componentDense[componentIndex[entity]];
 	}
 

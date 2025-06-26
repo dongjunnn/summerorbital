@@ -24,6 +24,12 @@ struct PlayerState {
     float y;
 };
 
+struct ProjectileState {
+    Entity projectileID; // The unique ID of the projectile
+    float x;
+    float y;
+};
+
 struct PacketProjectileCreated {
     //PacketType type = PacketType::PROJECTILE_CREATED;
     uint32_t entityID;

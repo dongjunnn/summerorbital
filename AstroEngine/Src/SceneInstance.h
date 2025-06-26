@@ -15,6 +15,8 @@ public:
 		CreateComponent<PlayerComponent>();
 		CreateComponent<TileComponent>();
 		CreateComponent<ProjectileComponent>();
+		CreateComponent<AnimationComponent>();
+		CreateComponent<HealthComponent>();
 	}
 
 	virtual ~SceneInstance() = default;
@@ -26,4 +28,15 @@ public:
 	Entity CreatePlayer(const Vector2D position, const SpriteComponent sprite);
 
 	Entity CreatePlayer(const Vector2D position, const Vector2D colDimensions);
+
+	Entity CreateUIHealthBorder(const Vector2D position, const SpriteComponent sprite);
+
+	Entity CreateUIHealthMeter(const Vector2D position, const SpriteComponent sprite);
+
+	void AddUIElement(std::string id, Entity entity);
+
+	Entity GetUIElement(std::string id);
+
+private:
+	UIElementMap uiElementMap;
 };

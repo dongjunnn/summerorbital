@@ -9,6 +9,8 @@ void PlayState::onEnter(Client& client)
     std::cout << "[CLIENT] Loading level map" << std::endl;
 	map = new Map("terrain", 1, 32);
 	map->LoadMap("assets/map.map", scene, *client.assets, 25, 20);
+
+    initUI(client);
 }
 
 void PlayState::handleInput(Client& client)
@@ -28,7 +30,7 @@ void PlayState::handleInput(Client& client)
 	// Populate the packet based on which keys are currently held down
 	if (keystates[SDL_SCANCODE_W]) input.up = true;
 	if (keystates[SDL_SCANCODE_S]) input.down = true;
-	if (keystates[SDL_SCANCODE_A]) input.left = true;
+    if (keystates[SDL_SCANCODE_A]) input.left = true;
 	if (keystates[SDL_SCANCODE_D]) input.right = true;
 
     if (keystates[SDL_SCANCODE_SPACE]) input.fireButtonPressed = true;
@@ -61,8 +63,8 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
             // Create the sprite for the projectile
             SpriteComponent projectileSprite { 
                 client.assets->GetTexture("orb"), 
-                {0,0,16,16}, 
-                {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 16, 16} 
+                {0,0,32,32}, 
+                {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 32, 32} 
             };
             
             // 1. Create a projectile locally, which gives us a NEW client-side ID
@@ -96,6 +98,32 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                 }
             }
         }
+        else if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(ProjectileState) == 0)
+        {
+            std::vector<ProjectileState> projectileStates(event.packet->dataLength / sizeof(ProjectileState));
+            memcpy(projectileStates.data(), event.packet->data, event.packet->dataLength);
+
+            for (const auto& serverState : projectileStates) {
+                // 3. Check if we have a mapping for this server ID
+                if (serverToClientEntityMap.count(serverState.projectileID)) {
+                    Entity clientID = serverToClientEntityMap.at(serverState.projectileID);
+                    TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
+                    transform.position.x = serverState.x;
+                    transform.position.y = serverState.y;
+                }
+                else {
+                    // This is a new projectile we haven't seen. Create it and store the mapping.
+                    
+                    SpriteComponent projSprite{
+                        client.assets->GetTexture("orb"),
+                        {0,0,32,32},
+                        {(int)serverState.x, (int)serverState.y, 32, 32}
+                    };
+                    Entity clientID = scene.CreateProjectile({ serverState.x, serverState.y }, {0.0f,0.0f}, projSprite);
+                    serverToClientEntityMap[serverState.projectileID] = clientID; 
+                }
+            }
+        }
 
         // 4. Destroy the packet when we're done with it.
         enet_packet_destroy(event.packet);
@@ -110,11 +138,8 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
 
 void PlayState::update(Client& client)	// updating internal state of client
 {
-	movementSystem.update();		// movement system updates the position of all entities with a transform and velocity
-	collisionSystem.updateColliderPositions();
-	collisionSystem.checkCollision();
-	collisionSystem.resolveCollision();		// resolve collisions pushes back entities if they overlap in movementsystem
-	// entityCleanSystem.cleanProjectiles();
+    animationSystem.PlayerAnim();
+    uiSystem.displayHP();
 }
 
 void PlayState::render(Client& client)
@@ -131,4 +156,13 @@ void PlayState::render(Client& client)
 void PlayState::onExit(Client& client)
 {
 	delete map;
+}
+
+void PlayState::initUI(Client& client)
+{
+    Entity UIHealthBorder = scene.CreateUIHealthBorder({ 0,0 }, { client.assets->GetTexture("healthBorder"), {0,0,224,32}, {0,0,224,32} });
+    Entity UIHealthBar = scene.CreateUIHealthMeter({ 0,0 }, { client.assets->GetTexture("healthMeter"), {0,0,160,32}, {0,0,160,32} });
+
+    scene.AddUIElement("HealthBorder", UIHealthBorder);
+    scene.AddUIElement("HealthBar", UIHealthBar);
 }

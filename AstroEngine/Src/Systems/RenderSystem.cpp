@@ -15,9 +15,21 @@ void RenderSystem::render(SDL_Renderer* renderer)
 		auto& t = scene.GetEntityData<TransformComponent>(e);
 		auto& s = scene.GetEntityData<SpriteComponent>(e);
 
-		s.dstRect.x = t.position.x;
-		s.dstRect.y = t.position.y;
-		
-		SDL_RenderCopy(renderer, s.texture, &s.srcRect, &s.dstRect);
+		if (scene.HasComponent<AnimationComponent>(e))
+		{
+			SDL_RendererFlip& animFlip = scene.GetEntityData<AnimationComponent>(e).spriteFlip;
+
+			s.dstRect.x = t.position.x;
+			s.dstRect.y = t.position.y;
+
+			SDL_RenderCopyEx(renderer, s.texture, &s.srcRect, &s.dstRect, NULL, NULL, animFlip);
+		}
+		else
+		{
+			s.dstRect.x = t.position.x;
+			s.dstRect.y = t.position.y;
+
+			SDL_RenderCopy(renderer, s.texture, &s.srcRect, &s.dstRect);
+		}
 	}
 }

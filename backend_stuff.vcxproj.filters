@@ -98,7 +98,7 @@
     <ClInclude Include="AstroEngine\Src\ECS\Net\Protocol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AstroEngine\Src\ECS\Animation.h">
+    <ClInclude Include="AstroEngine\Src\Components\AnimationComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h">
@@ -453,6 +453,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\GameStates\ServerStates\ServerState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Systems\AnimationSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Components\HealthComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Systems\UISystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

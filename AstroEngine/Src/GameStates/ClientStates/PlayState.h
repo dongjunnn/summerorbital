@@ -21,6 +21,8 @@ public:
 	void render(Client& client) override;
 	void onExit(Client& client) override;
 
+	void initUI(Client& client);
+	
 private:
 	Map* map;
 

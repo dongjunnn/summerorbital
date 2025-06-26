@@ -2,5 +2,5 @@
 
 struct ProjectileComponent
 {
-	// can add damage and wtv ltr
+	int dmg;
 };

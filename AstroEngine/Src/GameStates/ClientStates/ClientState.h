@@ -23,16 +23,14 @@ protected:
 
 	ClickableSystem clickableSystem;
 	RenderSystem renderSystem;
-	MovementSystem movementSystem;
-	CollisionSystem collisionSystem;
-	EntityCleanSystem entityCleanSystem;
+	AnimationSystem animationSystem;
+	UISystem uiSystem;
 
 	ClientState()
 		: clickableSystem(scene), 
 		  renderSystem(scene), 
-		  movementSystem(scene),
-		  collisionSystem(scene),
-		  entityCleanSystem(scene)
+		  animationSystem(scene),
+		  uiSystem(scene)
 	{ }
 
 };

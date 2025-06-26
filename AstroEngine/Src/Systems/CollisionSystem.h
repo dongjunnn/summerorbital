@@ -113,13 +113,17 @@ public:
 			}
 			case CollisionType::PlayerProjectile:
 			{
-				std::cout << "player-projectile resolution part" << std::endl;	// player projectile events are (player, projectile, event)
+				// player projectile events are (player, projectile, event)
 				
-				// for now we just destroy projectile
-				// add health logic later
+				int& hp = scene.GetEntityData<HealthComponent>(colEvent.a).hp;
+				int& dmg = scene.GetEntityData<ProjectileComponent>(colEvent.b).dmg;
+
+				hp -= dmg;
 				
-				scene.DestroyEntity(colEvent.b);		
-				std::cout << "Projectile destroyed?" << scene.isActive(colEvent.b) << std::endl;
+				std::cout << "Player " << colEvent.a << " is hit with remaining hp: " << hp << std::endl;
+
+				scene.DestroyEntity(colEvent.b);
+				std::cout << "player-projectile resolution, 0 for destroyed projectile: " << scene.isActive(colEvent.b) << std::endl;
 				break;
 			}
 			default:

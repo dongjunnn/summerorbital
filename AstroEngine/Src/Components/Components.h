@@ -8,3 +8,5 @@
 #include "PlayerComponent.h"
 #include "TileComponent.h"
 #include "ProjectileComponent.h"
+#include "AnimationComponent.h"
+#include "HealthComponent.h"

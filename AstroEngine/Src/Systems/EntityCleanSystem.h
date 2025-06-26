@@ -19,13 +19,13 @@ public:
 		for (Entity e : projectiles)
 		{
 			TransformComponent& tfm = scene.GetEntityData<TransformComponent>(e);
-			SpriteComponent& spr = scene.GetEntityData<SpriteComponent>(e);
+			SDL_Rect& col = scene.GetEntityData<ColliderComponent>(e).collider;
 
 			int x = static_cast<int>(tfm.position.x);
 			int y = static_cast<int>(tfm.position.y);
 
-			if (x < 0 || x + spr.dstRect.w > screenWidth ||
-				y < 0 || y + spr.dstRect.h > screenHeight)
+			if (x < 0 || x + col.w > screenWidth ||
+				y < 0 || y + col.h > screenHeight) 
 			{
 				toDelete.push_back(e);
 			}
@@ -35,6 +35,29 @@ public:
 		{
 			scene.DestroyEntity(e);
 			std::cout << "Destroyed entity " << e << ", Projectile Count: " << projectiles.size() << std::endl;
+		}
+	}
+
+	void clearDefeatedPlayers()
+	{
+		toDelete.clear();
+
+		auto& players = scene.GetView<PlayerComponent>();
+
+		for (Entity player : players)
+		{
+			int& hp = scene.GetEntityData<HealthComponent>(player).hp;
+
+			if (hp <= 0)
+			{
+				toDelete.push_back(player);
+			}
+		}
+
+		for (Entity e : toDelete)
+		{
+			scene.DestroyEntity(e);
+			std::cout << "Destroyed player  " << e << ", Player Count: " << players.size() << std::endl;
 		}
 	}
 

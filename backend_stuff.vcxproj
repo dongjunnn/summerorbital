@@ -105,15 +105,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\David\Desktop\the commit vomit\summerorbital\backend_stuff\enet-1.3.18\include;C:\Users\David\Desktop\the commit vomit\summerorbital\backend_stuff\SDL2_image-2.0.1\include;C:\Users\David\Desktop\the commit vomit\summerorbital\backend_stuff\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\David\Desktop\the commit vomit\summerorbital\enet-1.3.18\include;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2_image-2.0.1\include;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\David\Desktop\the commit vomit\summerorbital\backend_stuff\enet-1.3.18\lib;C:\Users\David\Desktop\the commit vomit\summerorbital\backend_stuff\SDL2_image-2.0.1\lib\x64;C:\Users\David\Desktop\the commit vomit\summerorbital\backend_stuff\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2_image-2.0.1\lib\x64;C:\Users\David\Desktop\the commit vomit\summerorbital\enet-1.3.18\lib;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;enet64.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -162,13 +166,14 @@
     <ClInclude Include="AstroEngine\Src\Components\ClickableComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\ColliderComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\Components.h" />
+    <ClInclude Include="AstroEngine\Src\Components\HealthComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\PlayerComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\ProjectileComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\SpriteComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\TileComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\TransformComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\VelocityComponent.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\Animation.h" />
+    <ClInclude Include="AstroEngine\Src\Components\AnimationComponent.h" />
     <ClInclude Include="AstroEngine\Src\ECS\ComponentDataContainer.h" />
     <ClInclude Include="AstroEngine\Src\ECS\ComponentManager.h" />
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h" />
@@ -190,12 +195,14 @@
     <ClInclude Include="AstroEngine\Src\Scene.h" />
     <ClInclude Include="AstroEngine\Src\SceneInstance.h" />
     <ClInclude Include="AstroEngine\Src\Server.h" />
+    <ClInclude Include="AstroEngine\Src\Systems\AnimationSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\ClickableSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\CollisionSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\EntityCleanSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\MovementSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\RenderSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\Systems.h" />
+    <ClInclude Include="AstroEngine\Src\Systems\UISystem.h" />
     <ClInclude Include="AstroEngine\Src\TextureManager.h" />
     <ClInclude Include="AstroEngine\Src\Vector2D.h" />
     <ClInclude Include="enet-1.3.18\include\enet\callbacks.h" />
