@@ -1,36 +1,36 @@
-#include <iostream>
-#include "Server.h" 
-#include "Client.h" 
-#include <cstring>
+#include "Game.h"
 
-#include <enet/enet.h>
+Game *game = nullptr;
 
-// We no longer need to include Game.h here, as the
-// Client and Server classes manage their own needs.
+int main(int argc, char *argv[])
+{
 
-int main(int argc, char* argv[]) {
-    // 1. Check for command-line arguments
-    bool isServer = false;
-    if (argc > 1 && strcmp(argv[1], "server") == 0) {
-        isServer = true;
-    }
+	const int FPS = 60;
+	const int frameDelay = 1000 / FPS;
 
-    // 2. Conditionally launch the correct application
-    if (isServer) {
-        std::cout << "Starting application in SERVER mode..." << std::endl;
-        Server server;
-        if (server.init()) {
-            server.run(); // The server has its own internal loop
-        }
-    } else {
-        std::cout << "Starting application in CLIENT mode..." << std::endl;
-        Client client;
-        if (client.init()) {
-            client.run(); // The client has its own internal loop
-        }
-    }
+	Uint32 frameStart;
+	int frameTime;
 
-    // Notice the old game loop is gone from main. It now lives
-    // inside the run() methods of the Server and Client classes.
-    return 0;
+	game = new Game();
+	game->init("GameWindow", 800, 640, false);
+
+	while (game->running())
+	{
+
+		frameStart = SDL_GetTicks();
+
+		game->handleEvents();
+		game->update();
+		game->render();
+
+		frameTime = SDL_GetTicks() - frameStart;
+		if (frameDelay > frameTime) 
+		{
+			SDL_Delay(frameDelay - frameTime);
+		}
+
+	}
+
+	game->clean();
+	return 0;
 }
