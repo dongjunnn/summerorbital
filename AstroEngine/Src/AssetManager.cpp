@@ -1,7 +1,6 @@
 #include "AssetManager.h"
-#include "ECS/Components.h"
 
-AssetManager::AssetManager(Manager* assetMan) : manager(assetMan)
+AssetManager::AssetManager()
 {}
 
 AssetManager::~AssetManager()
@@ -9,20 +8,29 @@ AssetManager::~AssetManager()
 
 void AssetManager::CreateProjectile(Vector2D pos, Vector2D vel, int speed, std::string id)
 {
-	auto& projectile(manager->addEntity());
-	projectile.addComponent<TransformComponent>(pos.x, pos.y, 32, 32, 1);
-	projectile.addComponent<SpriteComponent>(id, false);
-	projectile.addComponent <ProjectileComponent>(speed, vel);
-	projectile.addComponent<ColliderComponent>("projectile");
-	projectile.addGroup(Game::groupProjectiles);
+	// TODO
+	
 }
 
-void AssetManager::AddTexture(std::string id, const char* path)
+void AssetManager::AddTexture(std::string id, const char* path, SDL_Renderer* renderer)	// now that renderer is not static
 {
-	textures.emplace(id, TextureManager::LoadTexture(path));
+	SDL_Texture* tex = TextureManager::LoadTexture(path, renderer);
+	if (!tex) {
+		std::cerr << "Texture load failed for: " << path << std::endl;
+		return; // don't emplace nullptr
+	}
+	textures.emplace(id, tex);
 }
 
 SDL_Texture* AssetManager::GetTexture(std::string id)
 {
+	auto it = textures.find(id);
+	if (it != textures.end()) {
+		return it->second;
+	}
+	else {
+		std::cerr << "Texture not found: " << id << std::endl;
+		return nullptr;
+	}
 	return textures[id];
 }

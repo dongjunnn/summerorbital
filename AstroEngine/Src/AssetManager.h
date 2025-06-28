@@ -8,18 +8,16 @@
 class AssetManager
 {
 public:
-	AssetManager(Manager* assetMan);
+	AssetManager();
 	~AssetManager();
 
 	// game objects
 	void CreateProjectile(Vector2D pos, Vector2D vel, int speed, std::string id);
 
 	// texture management
-	void AddTexture(std::string id, const char* path);
+	void AddTexture(std::string id, const char* path, SDL_Renderer* renderer);
 	SDL_Texture* GetTexture(std::string id);
 
 private:
-
-	Manager* manager;
 	std::map<std::string, SDL_Texture*> textures;
 };

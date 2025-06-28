@@ -1,0 +1,37 @@
+#pragma once
+#include <enet/enet.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include "AssetManager.h"
+#include "GameStates/ClientStates/ClientState.h"
+
+class AssetManager;
+
+class Client {
+public:
+    Client();
+    ~Client();
+
+    bool init();
+    void run();
+    void changeState(ClientState* newState);
+
+    SDL_Renderer* renderer;
+    SDL_Event event;
+    AssetManager* assets;   // assets belongs to the client now
+
+    ENetPeer* getServerPeer() const { return serverPeer; }      // again if theres a better way
+    bool isRunning = false; // if theres a better way to do this go ahead
+
+private:
+    ENetHost* clientHost;
+    ENetPeer* serverPeer;
+
+    SDL_Window* window;
+
+    ClientState* currentState = nullptr;
+
+    // can change this if you want
+    void createWindow(const char* title, int width, int height, bool fullscreen);
+
+};
