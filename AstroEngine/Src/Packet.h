@@ -3,9 +3,10 @@
 
 enum class PacketType : uint8_t {
     PLAYER_INPUT,
-    PROJECTILE_CREATED
+    PROJECTILE_CREATED,
+    PROJECTILE_STATE,
+    PLAYER_STATE
 };
-
 
 
 struct PlayerInputPacket {
@@ -22,13 +23,16 @@ struct PlayerState {
     uint32_t entityID; // The unique ID of the entity
     float x;
     float y;
-};
+    float angle;
+    int health;
+    int colour;
+}; 
 
 struct ProjectileState {
     Entity projectileID; // The unique ID of the projectile
     float x;
     float y;
-};
+}; 
 
 struct PacketProjectileCreated {
     //PacketType type = PacketType::PROJECTILE_CREATED;

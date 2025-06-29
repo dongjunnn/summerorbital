@@ -9,10 +9,25 @@ public:
 
 	void displayHP()
 	{
+		/*
 		Entity healthBorder = scene.GetUIElement("HealthBorder");
 		Entity healthBar = scene.GetUIElement("HealthBar");
 
+		int& healthBarLevel = scene.GetEntityData<SpriteComponent>(healthBar).srcRect.w;	// max hp hbl = 224 min hp hbl = 64
 
+		Entity thisPlayer = scene.GetUIElement("thisPlayer");
+		int& thisHP = scene.GetEntityData<HealthComponent>(thisPlayer).hp;
+
+		if (scene.GetEntityData<HealthComponent>(thisPlayer).hp <= 0)
+		{
+			bool& thisAlive = scene.GetEntityData<PlayerComponent>(thisPlayer).isAlive;
+			thisAlive = false;
+			healthBarLevel = 64;
+			return;
+		}
+
+		healthBarLevel = (int)(64.0f + (thisHP / 100.0f) * 160.0f);     // currently players all have 100hp
+		*/
 	}
 
 private:

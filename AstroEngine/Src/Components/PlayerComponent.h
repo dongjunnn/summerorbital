@@ -2,5 +2,5 @@
 
 struct PlayerComponent
 {
-	// just a flag
+	bool isAlive;
 };

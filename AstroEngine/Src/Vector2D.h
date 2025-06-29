@@ -27,6 +27,18 @@ public:
 
     Vector2D& operator*(const int& i);
     Vector2D& Zero();
-    
+
+    // returns a new Vector2D 
+    Vector2D getNormalised() const; 
+
+    // rotates vector acw by r radians
+    Vector2D& rotateACW(float r);
+    Vector2D& rotateCW(float r);
+
+    // scales vector by scale factor
+    Vector2D& scale(float scale);
+
+    float magnitude() const { return std::sqrt(std::powf(x, 2) + std::powf(y, 2)); }    // check float, something is off with normal
+
     friend std::ostream& operator<<(std::ostream& stream, const Vector2D& vec);
 };

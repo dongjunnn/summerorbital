@@ -102,6 +102,42 @@ Vector2D& Vector2D::Zero()
     return *this;
 }
 
+Vector2D Vector2D::getNormalised() const
+{
+    float mag = this->magnitude();
+    if (mag > 0) { return Vector2D(x/mag, y/mag); }
+    return Vector2D(0.0f, 0.0f);
+}
+
+Vector2D& Vector2D::scale(float scale)
+{
+    this->x *= scale;
+    this->y *= scale;
+    return *this;
+}
+
+// rotates anti-clockwise by r radians
+Vector2D& Vector2D::rotateACW(float r)
+{
+    float X = x * cos(r) - y * sin(r);  // linear alg coming in clutch
+    float Y = x * sin(r) + y * cos(r);
+
+    this->x = X;
+    this->y = Y;
+    return *this;
+}
+
+// rotates clockwise by r radians; will people in the future not know what clockwise is, if all clocks become digital?
+Vector2D& Vector2D::rotateCW(float r)
+{
+    float X = x * cos(r) + y * sin(r);
+    float Y = y * cos(r) - x * sin(r);
+
+    this->x = X;
+    this->y = Y;
+    return *this;
+}
+
 std::ostream& operator<<(std::ostream& stream, const Vector2D& vec)
 {
     stream << "(" << vec.x << "," << vec.y << ")";

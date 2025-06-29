@@ -56,23 +56,24 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
     {
         // Check for projectile creation
         if (event.packet->dataLength == sizeof(PacketProjectileCreated))
-        {
-            PacketProjectileCreated projectilePacket;
-            memcpy(&projectilePacket, event.packet->data, sizeof(PacketProjectileCreated));
+            {
+                PacketProjectileCreated projectilePacket;
+                memcpy(&projectilePacket, event.packet->data, sizeof(PacketProjectileCreated));
 
-            // Create the sprite for the projectile
-            SpriteComponent projectileSprite { 
-                client.assets->GetTexture("orb"), 
-                {0,0,32,32}, 
-                {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 32, 32} 
-            };
-            
-            // 1. Create a projectile locally, which gives us a NEW client-side ID
-            Entity clientID = scene.CreateProjectile(projectilePacket.position, projectilePacket.velocity, projectileSprite);
+                // Create the sprite for the projectile
+                SpriteComponent projectileSprite{
+                    client.assets->GetTexture("orb"),
+                    {0,0,32,32},
+                    {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 32, 32}
+                };
 
-            // 2. Store the mapping from the server's ID to our new client ID
-            serverToClientEntityMap[projectilePacket.entityID] = clientID;
-        }
+                // 1. Create a projectile locally, which gives us a NEW client-side ID
+                Entity clientID = scene.CreateProjectile(projectilePacket.position, projectilePacket.velocity, projectileSprite);
+
+                // 2. Store the mapping from the server's ID to our new client ID
+                serverToClientEntityMap[projectilePacket.entityID] = clientID;
+            }
+
         // Check for game state updates
         else if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(PlayerState) == 0)
         {
@@ -86,45 +87,56 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                     TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
                     transform.position.x = serverState.x;
                     transform.position.y = serverState.y;
-                } else {
+
+                    RotationComponent& rot = scene.GetEntityData<RotationComponent>(clientID);
+                    rot.angle = serverState.angle;
+
+                    HealthComponent& health = scene.GetEntityData<HealthComponent>(clientID);
+                    health.hp = serverState.health;
+
+                }
+                else {
                     // This is a new player we haven't seen. Create it and store the mapping.
-                    SpriteComponent playerSprite { 
-                        client.assets->GetTexture("player"),
-                        {0,0,32,32},
+                    SpriteComponent playerSprite{
+                        client.assets->GetTexture("ship"),
+                        {0,0,96,96},
                         {(int)serverState.x, (int)serverState.y, 32, 32}
                     };
-                    Entity clientID = scene.CreatePlayer({serverState.x, serverState.y}, playerSprite);
+                    Entity clientID = scene.CreatePlayer({ serverState.x, serverState.y }, playerSprite);
+                    scene.AddUIElement("thisPlayer", clientID); // lol player is a UI element, this code is getting messy
+                    std::cout << "[CLIENT] New player created with id " << clientID << std::endl;
                     serverToClientEntityMap[serverState.entityID] = clientID;
                 }
             }
         }
+            
         else if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(ProjectileState) == 0)
-        {
-            std::vector<ProjectileState> projectileStates(event.packet->dataLength / sizeof(ProjectileState));
-            memcpy(projectileStates.data(), event.packet->data, event.packet->dataLength);
+            {
+                
+                std::vector<ProjectileState> projectileStates(event.packet->dataLength / sizeof(ProjectileState));
+                memcpy(projectileStates.data(), event.packet->data, event.packet->dataLength);
 
-            for (const auto& serverState : projectileStates) {
-                // 3. Check if we have a mapping for this server ID
-                if (serverToClientEntityMap.count(serverState.projectileID)) {
-                    Entity clientID = serverToClientEntityMap.at(serverState.projectileID);
-                    TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
-                    transform.position.x = serverState.x;
-                    transform.position.y = serverState.y;
-                }
-                else {
-                    // This is a new projectile we haven't seen. Create it and store the mapping.
-                    
-                    SpriteComponent projSprite{
-                        client.assets->GetTexture("orb"),
-                        {0,0,32,32},
-                        {(int)serverState.x, (int)serverState.y, 32, 32}
-                    };
-                    Entity clientID = scene.CreateProjectile({ serverState.x, serverState.y }, {0.0f,0.0f}, projSprite);
-                    serverToClientEntityMap[serverState.projectileID] = clientID; 
+                for (const auto& serverState : projectileStates) {
+                    // 3. Check if we have a mapping for this server ID
+                    if (serverToClientEntityMap.count(serverState.projectileID)) {
+                        Entity clientID = serverToClientEntityMap.at(serverState.projectileID);
+                        TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
+                        transform.position.x = serverState.x;
+                        transform.position.y = serverState.y;
+                    }
+                    else {
+                        // This is a new projectile we haven't seen. Create it and store the mapping.
+
+                        SpriteComponent projSprite{
+                            client.assets->GetTexture("orb"),
+                            {0,0,32,32},
+                            {(int)serverState.x, (int)serverState.y, 32, 32}
+                        };
+                        Entity clientID = scene.CreateProjectile({ serverState.x, serverState.y }, { 0.0f,0.0f }, projSprite);
+                        serverToClientEntityMap[serverState.projectileID] = clientID;
+                    }
                 }
             }
-        }
-
         // 4. Destroy the packet when we're done with it.
         enet_packet_destroy(event.packet);
         break;
@@ -161,7 +173,7 @@ void PlayState::onExit(Client& client)
 void PlayState::initUI(Client& client)
 {
     Entity UIHealthBorder = scene.CreateUIHealthBorder({ 0,0 }, { client.assets->GetTexture("healthBorder"), {0,0,224,32}, {0,0,224,32} });
-    Entity UIHealthBar = scene.CreateUIHealthMeter({ 0,0 }, { client.assets->GetTexture("healthMeter"), {0,0,160,32}, {0,0,160,32} });
+    Entity UIHealthBar = scene.CreateUIHealthMeter({ 0,0 }, { client.assets->GetTexture("healthMeter"), {0,0,224,32}, {0,0,224,32} });
 
     scene.AddUIElement("HealthBorder", UIHealthBorder);
     scene.AddUIElement("HealthBar", UIHealthBar);

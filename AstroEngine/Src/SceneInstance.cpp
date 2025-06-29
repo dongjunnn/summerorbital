@@ -61,21 +61,24 @@ Entity SceneInstance::CreatePlayer(const Vector2D position, const SpriteComponen
 	AddComponent<VelocityComponent>(player);
 	AddComponent<SpriteComponent>(player);
 	AddComponent<ColliderComponent>(player);
-	AddComponent<PlayerComponent>(player);	// just a flag for now
-    AddComponent<AnimationComponent>(player); // only for the client 
+	AddComponent<PlayerComponent>(player);	// is alive bool
+    //AddComponent<AnimationComponent>(player); // only for the client 
     AddComponent<HealthComponent>(player);      // yay health component
+    AddComponent<RotationComponent>(player);    
 
 	TransformComponent tfm = { Vector2D { position.x, position.y } };
 	ColliderComponent col = { { position.x, position.y, sprite.dstRect.w, sprite.dstRect.h } };
-    AnimationComponent ani = { { { {std::string("idle"), { 0,3,100 } },
-                                   {std::string("walk"), { 1,8,100 } } } } };
+    /* AnimationComponent ani = {{{{std::string("idle"), {0,3,100}},
+                                   {std::string("walk"), { 1,8,100 } } } } }; */
 
 	SetEntityData<TransformComponent>(player, tfm);
 	SetEntityData<VelocityComponent>(player, { Vector2D {0,0} });
 	SetEntityData<SpriteComponent>(player, sprite);
 	SetEntityData<ColliderComponent>(player, col);
-    SetEntityData<AnimationComponent>(player, ani);
+    SetEntityData<PlayerComponent>(player, { true });
+    //SetEntityData<AnimationComponent>(player, ani);   // not for now
     SetEntityData<HealthComponent>(player, {100} );
+    SetEntityData<RotationComponent>(player, { 0.0f });
 
 	ComponentBitSet newSig = GetEntitySignature(player);		// updating views
 	UpdateViews(player, ComponentBitSet{}, newSig);
@@ -92,6 +95,7 @@ Entity SceneInstance::CreatePlayer(const Vector2D position, const Vector2D colDi
 	AddComponent<ColliderComponent>(player);
 	AddComponent<PlayerComponent>(player);	// just a flag for now
     AddComponent<HealthComponent>(player); 
+    AddComponent<RotationComponent>(player);    
 
 	TransformComponent tfm = { Vector2D { position.x, position.y } };
 	ColliderComponent col = { { position.x, position.y, colDimensions.x, colDimensions.y } };
@@ -99,7 +103,9 @@ Entity SceneInstance::CreatePlayer(const Vector2D position, const Vector2D colDi
 	SetEntityData<TransformComponent>(player, tfm);
 	SetEntityData<VelocityComponent>(player, { Vector2D {0,0} });
 	SetEntityData<ColliderComponent>(player, col);
+    SetEntityData<PlayerComponent>(player, { true });
     SetEntityData<HealthComponent>(player, { 100 });
+    SetEntityData<RotationComponent>(player, { 0.0f });
 
 	ComponentBitSet newSig = GetEntitySignature(player);		// updating views
 	UpdateViews(player, ComponentBitSet{}, newSig);

@@ -17,6 +17,7 @@ public:
 		CreateComponent<ProjectileComponent>();
 		CreateComponent<AnimationComponent>();
 		CreateComponent<HealthComponent>();
+		CreateComponent<RotationComponent>();
 	}
 
 	virtual ~SceneInstance() = default;

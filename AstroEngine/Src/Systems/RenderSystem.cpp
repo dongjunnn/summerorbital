@@ -15,14 +15,16 @@ void RenderSystem::render(SDL_Renderer* renderer)
 		auto& t = scene.GetEntityData<TransformComponent>(e);
 		auto& s = scene.GetEntityData<SpriteComponent>(e);
 
-		if (scene.HasComponent<AnimationComponent>(e))
+		if (scene.HasComponent<RotationComponent>(e))	// yes this is hard coded for now
 		{
-			SDL_RendererFlip& animFlip = scene.GetEntityData<AnimationComponent>(e).spriteFlip;
+			// SDL_RendererFlip& animFlip = scene.GetEntityData<AnimationComponent>(e).spriteFlip;
+			RotationComponent& rot =  scene.GetEntityData<RotationComponent>(e);
 
 			s.dstRect.x = t.position.x;
 			s.dstRect.y = t.position.y;
 
-			SDL_RenderCopyEx(renderer, s.texture, &s.srcRect, &s.dstRect, NULL, NULL, animFlip);
+			SDL_RenderCopyEx(renderer, s.texture, &s.srcRect, &s.dstRect, ((double) rot.angle) * (180/3.1415), NULL, SDL_FLIP_NONE);
+			continue;
 		}
 		else
 		{

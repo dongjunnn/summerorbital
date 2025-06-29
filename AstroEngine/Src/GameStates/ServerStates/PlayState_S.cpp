@@ -20,7 +20,7 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             << event.peer->address.host << ":" << event.peer->address.port << std::endl;
     
         // realise this implementation loses global transform scaling, can do somthing about that if need be
-        Entity newPlayer = scene.CreatePlayer({ Vector2D{400,320} }, { Vector2D {32,32} });
+        Entity newPlayer = scene.CreatePlayer({ Vector2D{ 400,320} }, { Vector2D {32,32} });
 
         event.peer->data = (void*)((uintptr_t) newPlayer );     // this could be a problem if a player dies
         std::cout << "[SERVER] Created player with ID " << newPlayer << " for the new client." << std::endl;
@@ -34,20 +34,58 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             << event.packet->dataLength << std::endl;  */
 
 
-        // This is where you will process player input
+            // This is where you will process player input
         Entity playerID = (uintptr_t)event.peer->data;
 
         PlayerInputPacket input;
         memcpy(&input, event.packet->data, sizeof(PlayerInputPacket));
 
         // Update the player's velocity based on the input
-        VelocityComponent& vel = scene.GetEntityData<VelocityComponent>(playerID); 
-   
-        vel.velocity = Vector2D(0, 0); // Reset velocity; rip syntax, maybe velocity component could have just been
-        if (input.up) vel.velocity.y = -1;      // x,y instead of a Vec2D
-        if (input.down) vel.velocity.y = 1;
-        if (input.left) vel.velocity.x = -1;
-        if (input.right) vel.velocity.x = 1;
+        Vector2D& vel = scene.GetEntityData<VelocityComponent>(playerID).velocity;
+        float& plyrAngle = scene.GetEntityData<RotationComponent>(playerID).angle;
+
+        // vel.velocity = Vector2D(0, 0); // Reset velocity; rip syntax, maybe velocity component could have just been x,y instead of a Vec2D
+        
+        float accel = 0.2f;
+        Vector2D normalised = vel.getNormalised();
+        Vector2D bias = Vector2D(0.0f, -1.0f).scale(accel);
+        float magnitude = vel.magnitude();
+        float brake = 0.1f;
+        float rot_speed = 0.05f;     // in radians
+
+        // if w is pressed and the increase in velocity is less than the difference between current and max velocities, add velocity
+        if (input.up && (MAX_VEL - magnitude >= bias.magnitude()))
+        {
+            vel = vel + bias.rotateACW(plyrAngle);
+            //vel.velocity.y = -1;
+        }
+        else if (input.up){ vel += bias.scale(MAX_VEL - bias.magnitude()).rotateACW(plyrAngle); }
+
+        // if s is pressed and the decrease in velocity doesnt lead to negative magnitude, decrease velocity
+        if (input.down && (magnitude - normalised.scale(brake).magnitude() >= 0.0f))
+        {
+            vel -= normalised.scale(brake);
+            //vel.velocity.y = 1;
+        } 
+        else if (input.down) { vel.x = 0.0f; vel.y = 0.0f; }
+
+        // if a is pressed, rotate clockwise
+        if (input.left)
+        {
+            plyrAngle -= rot_speed;
+           //vel.velocity.x = -1;
+        }
+        if (input.right)
+        {
+            plyrAngle += rot_speed;
+            //vel.velocity.x = 1;
+        }
+
+        if (!(input.up || input.down))
+        {
+            vel -= normalised.scale(VEL_DECAY);
+        }
+        
 
         if (input.fireButtonPressed) {
             TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
@@ -65,7 +103,7 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
                 sizeof(PacketProjectileCreated),
                 ENET_PACKET_FLAG_RELIABLE);
 
-            enet_host_broadcast(server.getServerHost(), 0, packet);
+            enet_host_broadcast(server.getServerHost(), 0, packet); 
         }
 
 
@@ -102,6 +140,7 @@ void PlayState_S::broadcastStates(Server& server)
 {
     // This function will eventually package up the game state (like entity positions)
     // and send it to all clients. For now, we can leave it empty.
+
     std::vector<PlayerState> playerStates;
     std::vector<ProjectileState> projectileStates;
 
@@ -112,7 +151,12 @@ void PlayState_S::broadcastStates(Server& server)
         state.entityID = player;
         state.x = scene.GetEntityData<TransformComponent>(player).position.x;   // rip 
         state.y = scene.GetEntityData<TransformComponent>(player).position.y;   // its cache miss time
-        playerStates.push_back(state);                                          // damn this ecs needs work               
+        state.angle = scene.GetEntityData<RotationComponent>(player).angle;
+
+        state.health = scene.GetEntityData<HealthComponent>(player).hp;
+        state.colour = 0;
+
+        playerStates.push_back(state);                                          // damn this ecs needs work
     }
 
     auto& projectiles = scene.GetView<ProjectileComponent>();
@@ -126,11 +170,12 @@ void PlayState_S::broadcastStates(Server& server)
     }
 
     // Only send a packet if there are players to update
-    if (!playerStates.empty())
+    if (!playerStates.empty())      // player states on channel 0
     {
         // Create an ENet packet.
         // The data is the start of our vector, and the length is the total size in bytes.
         // ENET_PACKET_FLAG_RELIABLE means the packet is guaranteed to arrive.
+
         ENetPacket* packet = enet_packet_create(playerStates.data(),
             playerStates.size() * sizeof(PlayerState),
             ENET_PACKET_FLAG_RELIABLE);
@@ -139,16 +184,16 @@ void PlayState_S::broadcastStates(Server& server)
         enet_host_broadcast(server.getServerHost(), 0, packet);
     }
 
-    if (!projectileStates.empty())
+    if (!projectileStates.empty())  
     {
         // Create an ENet packet.
         // The data is the start of our vector, and the length is the total size in bytes.
         // ENET_PACKET_FLAG_RELIABLE means the packet is guaranteed to arrive.
-        ENetPacket* packet = enet_packet_create(projectileStates.data(),
+        ENetPacket* packet = enet_packet_create(projectileStates.data(),  
             projectileStates.size() * sizeof(ProjectileState),
             ENET_PACKET_FLAG_RELIABLE);
 
-        // Send the packet to all connected clients on channel 0.
+        std::cout << "Sending packet: " << projectileStates.size() << std::endl;
         enet_host_broadcast(server.getServerHost(), 0, packet);
     }
 }

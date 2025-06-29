@@ -79,7 +79,7 @@ public:
 			{
 			case CollisionType::PlayerTile:		// player tile events are (player, tile, event)
 			{
-				std::cout << "playertile resolution part" << std::endl;
+				// std::cout << "playertile resolution part" << std::endl;
 
 				SDL_Rect& pcol = scene.GetEntityData<ColliderComponent>(colEvent.a).collider;
 				SDL_Rect& tcol = scene.GetEntityData<ColliderComponent>(colEvent.b).collider;

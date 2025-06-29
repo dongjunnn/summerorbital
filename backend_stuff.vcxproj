@@ -44,6 +44,7 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <EnableASAN>false</EnableASAN>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -137,8 +138,6 @@
     <ClCompile Include="AstroEngine\Src\AssetManager.cpp" />
     <ClCompile Include="AstroEngine\Src\Client.cpp" />
     <ClCompile Include="AstroEngine\Src\Collision.cpp" />
-    <ClCompile Include="AstroEngine\Src\ECS\Net\NetClient.cpp" />
-    <ClCompile Include="AstroEngine\Src\ECS\Net\NetServer.cpp" />
     <ClCompile Include="AstroEngine\Src\GameStates\ClientStates\PlayState.cpp" />
     <ClCompile Include="AstroEngine\Src\GameStates\ClientStates\TitleState.cpp" />
     <ClCompile Include="AstroEngine\Src\GameStates\ServerStates\PlayState_S.cpp" />
@@ -169,6 +168,7 @@
     <ClInclude Include="AstroEngine\Src\Components\HealthComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\PlayerComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\ProjectileComponent.h" />
+    <ClInclude Include="AstroEngine\Src\Components\RotationComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\SpriteComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\TileComponent.h" />
     <ClInclude Include="AstroEngine\Src\Components\TransformComponent.h" />
@@ -179,11 +179,6 @@
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h" />
     <ClInclude Include="AstroEngine\Src\ECS\EntityManager.h" />
     <ClInclude Include="AstroEngine\Src\ECS\InputControllerComponent.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\KeyboardController.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\KeyboardInputSource.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\Net\NetClient.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\Net\NetServer.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\Net\Protocol.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\ClientState.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\PlayState.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\TitleState.h" />

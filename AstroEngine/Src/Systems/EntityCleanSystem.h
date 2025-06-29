@@ -56,6 +56,8 @@ public:
 
 		for (Entity e : toDelete)
 		{
+			//bool& isPlayerAlive = scene.GetEntityData<PlayerComponent>(e).isAlive;
+			//SetEntityData<PlayerComponent>(player, { true })
 			scene.DestroyEntity(e);
 			std::cout << "Destroyed player  " << e << ", Player Count: " << players.size() << std::endl;
 		}

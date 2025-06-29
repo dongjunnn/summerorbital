@@ -10,3 +10,4 @@
 #include "ProjectileComponent.h"
 #include "AnimationComponent.h"
 #include "HealthComponent.h"
+#include "RotationComponent.h"

@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AstroEngine\Src\ECS\Net\NetClient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AstroEngine\Src\ECS\Net\NetServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AstroEngine\Src\AssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -89,15 +83,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AstroEngine\Src\ECS\Net\NetClient.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AstroEngine\Src\ECS\Net\NetServer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AstroEngine\Src\ECS\Net\Protocol.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AstroEngine\Src\Components\AnimationComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -105,12 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\ECS\InputControllerComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AstroEngine\Src\ECS\KeyboardController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AstroEngine\Src\ECS\KeyboardInputSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\AssetManager.h">
@@ -462,6 +441,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\Systems\UISystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Components\RotationComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

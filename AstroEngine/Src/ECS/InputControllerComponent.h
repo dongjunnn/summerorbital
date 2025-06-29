@@ -1,11 +1,11 @@
 #pragma once
 
 #include "ECS.h"
-#include "Components.h"
+#include "../Components/Components.h"
 #include "Net/Protocol.h"
 
 #ifndef SERVER_BUILD
-  #include "SpriteComponent.h"
+#include "SpriteComponent.h"
 #endif
 
 class InputControllerComponent : public Component {
