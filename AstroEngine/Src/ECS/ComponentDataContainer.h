@@ -2,12 +2,14 @@
 #include <array>
 #include <vector>
 #include <map>
+#include <algorithm>
 #include "ECS.h"
 
 class ComponentDataContainer
 {
 public:
 	virtual ~ComponentDataContainer() = default;
+	virtual void RemoveEntity(Entity entity) = 0;
 };
 
 
@@ -45,6 +47,30 @@ public:
 		}
 		return componentDense[componentIndex[entity]];
 	}
+	
+	void DeleteEntityDatafromArray(Entity entity)
+	{	
+		auto it = std::find(denseIndex.begin(), denseIndex.end(), entity);	// deletion index in dense
+		if (it == denseIndex.end()) { std::cerr << "Deletion index error" << std::endl; return; }
+
+		// swap sparse stuff
+		componentIndex[denseIndex.back()] = componentIndex[entity];
+		componentIndex[entity] = 0;
+		componentAvail[entity] = false;
+
+		// swap dense stuff
+		std::swap(denseIndex[it - denseIndex.begin()], denseIndex.back());
+		std::swap(componentDense[it - denseIndex.begin()], componentDense.back());
+		
+		// pop off last value of dense
+		denseIndex.pop_back();
+		componentDense.pop_back();
+	}
+
+	void RemoveEntity(Entity entity) override
+	{
+		DeleteEntityDatafromArray(entity);
+	}
 
 	std::vector<Entity>& GetDenseIndex()
 	{
@@ -62,4 +88,5 @@ private:
 	std::vector<Entity> denseIndex;
 	std::vector<T> componentDense;
 };
+
 

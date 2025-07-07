@@ -63,6 +63,11 @@ public:
 		return GetComponentData<T>()->GetEntityDatafromArray(entity);
 	}
 
+	template<typename T> void RemoveEntityData(Entity entity)	// does this work?
+	{
+		GetComponentData<T>()->DeleteEntityDatafromArray(entity);
+	}
+
 	template<typename T> std::vector<T>& GetComponentUserData()
 	{
 		return GetComponentData<T>()->GetDense();
@@ -99,14 +104,22 @@ public:
 
 	void RemoveAllData(Entity entity)							//  removes all component data from entity
 	{
-		EntityComponents[entity].reset();						//  don't actually have to overwrite the data, system treats it as no components
+		ComponentBitSet bitset = GetEntitySignature(entity);
+		for (ComponentID id = 0; id < MAX_COMPONENTS; id++)
+		{
+			if (bitset[id])
+			{
+				if (ComponentArray[id]) { ComponentArray[id]->RemoveEntity(entity); }
+			}
+		}
+		EntityComponents[entity].reset();		
+		
 	}
 
 private:
 	std::array<ComponentBitSet, MAX_ENTITIES> EntityComponents;			// stores data on which entity has what component, in a bitset
 	std::unordered_map<std::type_index, ComponentID> ComponentTypeIDMap;	// connects Component type to a unique ID
 	std::array<ComponentDataPtr, MAX_COMPONENTS> ComponentArray;		// array of pointers pointing to arrays containing data
-	std::array<int, MAX_COMPONENTS> ComponentUsage{};					// not used for now
 	
 	ComponentID nextComponentID = 0;
 

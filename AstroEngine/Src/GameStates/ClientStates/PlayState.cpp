@@ -10,6 +10,44 @@ void PlayState::onEnter(Client& client)
 	map = new Map("terrain", 1, 32);
 	map->LoadMap("assets/map.map", scene, *client.assets, 25, 20);
 
+    // initiating connection only on play
+    ENetAddress address;
+    enet_address_set_host(&address, "127.0.0.1"); // localhost
+    address.port = 1234;
+
+    ENetPeer* peer = enet_host_connect(client.getClientHost(), &address, 5, 0);
+    client.setServerPeer(peer);
+
+    if (peer == nullptr) {
+        std::cerr << "No available peers for initiating an ENet connection." << std::endl;
+    }
+
+    while (!scene.IsUIElement("thisPlayer"))
+    {
+        ENetEvent event;
+        while (enet_host_service(client.getClientHost(), &event, 0) > 0)
+        {
+            if (event.type == ENET_EVENT_TYPE_RECEIVE && event.channelID == 4)
+            {
+                PlayerState state;
+                memcpy(&state, event.packet->data, sizeof(state));
+
+                SpriteComponent playerSprite{
+                        client.assets->GetTexture("ship"),
+                        {0,0,96,96},
+                        { (int)state.x,  (int)state.y, 32, 32 }
+                };
+                Entity clientID = scene.CreatePlayer({ state.x, state.y }, playerSprite);
+                scene.AddUIElement("thisPlayer", clientID);
+                serverToClientEntityMap[state.entityID] = clientID;
+
+                enet_packet_destroy(event.packet);
+                break;
+            }
+            enet_packet_destroy(event.packet);
+        }
+    }
+
     initUI(client);
 }
 
@@ -54,8 +92,14 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
         break;
     case ENET_EVENT_TYPE_RECEIVE:
     {
-        // Check for projectile creation
-        if (event.packet->dataLength == sizeof(PacketProjectileCreated))
+        /* std::cout << "[CLIENT] Received packet on channel " << event.channelID
+            << " with length " << event.packet->dataLength << std::endl; */
+        switch (event.channelID)
+        {
+        case 2:
+        {
+            // Check for projectile creation
+            if (event.packet->dataLength == sizeof(PacketProjectileCreated))
             {
                 PacketProjectileCreated projectilePacket;
                 memcpy(&projectilePacket, event.packet->data, sizeof(PacketProjectileCreated));
@@ -73,46 +117,50 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                 // 2. Store the mapping from the server's ID to our new client ID
                 serverToClientEntityMap[projectilePacket.entityID] = clientID;
             }
-
-        // Check for game state updates
-        else if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(PlayerState) == 0)
+            break;
+        }
+        case 0:
         {
-            std::vector<PlayerState> playerStates(event.packet->dataLength / sizeof(PlayerState));
-            memcpy(playerStates.data(), event.packet->data, event.packet->dataLength);
+            // Check for game state updates
+            if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(PlayerState) == 0)
+            {
+                std::vector<PlayerState> playerStates(event.packet->dataLength / sizeof(PlayerState));
+                memcpy(playerStates.data(), event.packet->data, event.packet->dataLength);
 
-            for (const auto& serverState : playerStates) {
-                // 3. Check if we have a mapping for this server ID
-                if (serverToClientEntityMap.count(serverState.entityID)) {
-                    Entity clientID = serverToClientEntityMap.at(serverState.entityID);
-                    TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
-                    transform.position.x = serverState.x;
-                    transform.position.y = serverState.y;
+                for (const auto& serverState : playerStates) {
+                    // 3. Check if we have a mapping for this server ID
+                    if (serverToClientEntityMap.count(serverState.entityID)) {
+                        Entity clientID = serverToClientEntityMap.at(serverState.entityID);
+                        TransformComponent& transform = scene.GetEntityData<TransformComponent>(clientID);
+                        transform.position.x = serverState.x;
+                        transform.position.y = serverState.y;
 
-                    RotationComponent& rot = scene.GetEntityData<RotationComponent>(clientID);
-                    rot.angle = serverState.angle;
+                        RotationComponent& rot = scene.GetEntityData<RotationComponent>(clientID);
+                        rot.angle = serverState.angle;
 
-                    HealthComponent& health = scene.GetEntityData<HealthComponent>(clientID);
-                    health.hp = serverState.health;
+                        HealthComponent& health = scene.GetEntityData<HealthComponent>(clientID);
+                        health.hp = serverState.health;
 
-                }
-                else {
-                    // This is a new player we haven't seen. Create it and store the mapping.
-                    SpriteComponent playerSprite{
-                        client.assets->GetTexture("ship"),
-                        {0,0,96,96},
-                        {(int)serverState.x, (int)serverState.y, 32, 32}
-                    };
-                    Entity clientID = scene.CreatePlayer({ serverState.x, serverState.y }, playerSprite);
-                    scene.AddUIElement("thisPlayer", clientID); // lol player is a UI element, this code is getting messy
-                    std::cout << "[CLIENT] New player created with id " << clientID << std::endl;
-                    serverToClientEntityMap[serverState.entityID] = clientID;
+                    }
+                    else {
+                        // This is a new player we haven't seen. Create it and store the mapping.
+                        SpriteComponent playerSprite{
+                            client.assets->GetTexture("ship"),
+                            {0,0,96,96},
+                            {(int)serverState.x, (int)serverState.y, 32, 32}
+                        };
+                        Entity clientID = scene.CreatePlayer({ serverState.x, serverState.y }, playerSprite);
+                        std::cout << "[CLIENT] New other player created with id " << clientID << std::endl;
+                        serverToClientEntityMap[serverState.entityID] = clientID;
+                    }
                 }
             }
+            break;
         }
-            
-        else if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(ProjectileState) == 0)
+        case 1:
+        {
+            if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(ProjectileState) == 0)
             {
-                
                 std::vector<ProjectileState> projectileStates(event.packet->dataLength / sizeof(ProjectileState));
                 memcpy(projectileStates.data(), event.packet->data, event.packet->dataLength);
 
@@ -137,6 +185,35 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                     }
                 }
             }
+            break;
+        }
+        case 3:
+        {
+            if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(PacketProjectileDestroyed) == 0)
+            {
+                std::vector<PacketProjectileDestroyed> delProjectiles(event.packet->dataLength / sizeof(PacketProjectileDestroyed));
+                memcpy(delProjectiles.data(), event.packet->data, event.packet->dataLength);
+
+                for (const auto& serverState: delProjectiles)
+                {
+                    if (serverToClientEntityMap.count(serverState.entityID))
+                    {
+                        Entity projID = serverToClientEntityMap.at(serverState.entityID);
+                        scene.DestroyEntity(projID);
+                        
+                        serverToClientEntityMap.erase(serverState.entityID);
+                        // is this enough? unordered map should be fine right?
+
+                        /*
+                        std::cout << "[CLIENT] Entity with Client ID: " << projID << ", Server ID: " << serverState.entityID << " deleted" << std::endl;
+                        std::cout << "[CLIENT] Entities remaining: " << std::count(scene.GetActiveEntities().begin(),
+                                                                                   scene.GetActiveEntities().end(), true); */
+                    }
+                }
+            }
+            break;
+        }
+        }
         // 4. Destroy the packet when we're done with it.
         enet_packet_destroy(event.packet);
         break;

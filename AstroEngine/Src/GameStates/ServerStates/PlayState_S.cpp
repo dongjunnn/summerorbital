@@ -18,13 +18,28 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
     {
         std::cout << "[SERVER] A new client connected from "
             << event.peer->address.host << ":" << event.peer->address.port << std::endl;
-    
+
         // realise this implementation loses global transform scaling, can do somthing about that if need be
         Entity newPlayer = scene.CreatePlayer({ Vector2D{ 400,320} }, { Vector2D {32,32} });
 
-        event.peer->data = (void*)((uintptr_t) newPlayer );     // this could be a problem if a player dies
+        event.peer->data = (void*)((uintptr_t)newPlayer);     // this could be a problem if a player dies
         std::cout << "[SERVER] Created player with ID " << newPlayer << " for the new client." << std::endl;
 
+        PlayerState state;
+        state.entityID = newPlayer;
+        state.x = scene.GetEntityData<TransformComponent>(newPlayer).position.x;   // rip 
+        state.y = scene.GetEntityData<TransformComponent>(newPlayer).position.y;   // its cache miss time
+        state.angle = scene.GetEntityData<RotationComponent>(newPlayer).angle;
+
+        state.health = scene.GetEntityData<HealthComponent>(newPlayer).hp;
+        state.colour = 0;
+
+        ENetPacket* packet = enet_packet_create(&state,
+            sizeof(PlayerState),
+            ENET_PACKET_FLAG_RELIABLE);
+
+        // Send the packet to all connected clients on channel 0.
+        enet_peer_send(event.peer, 4, packet);
         break;
     }
 
@@ -32,7 +47,6 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
     {
         /* std::cout << "[SERVER] Received a packet of length "
             << event.packet->dataLength << std::endl;  */
-
 
             // This is where you will process player input
         Entity playerID = (uintptr_t)event.peer->data;
@@ -88,6 +102,8 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         
 
         if (input.fireButtonPressed) {
+            // projectile creation on 2
+
             TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
             Vector2D projectileVelocity = { 5.0f, 0.0f }; // can change this velocity TODO
 
@@ -102,11 +118,9 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             ENetPacket* packet = enet_packet_create(&projectilePacket,
                 sizeof(PacketProjectileCreated),
                 ENET_PACKET_FLAG_RELIABLE);
-
-            enet_host_broadcast(server.getServerHost(), 0, packet); 
+            
+            enet_host_broadcast(server.getServerHost(), 2, packet); 
         }
-
-
 
         enet_packet_destroy(event.packet);
         break;
@@ -132,8 +146,10 @@ void PlayState_S::update(Server& server)
     collisionSystem.updateColliderPositions();
     collisionSystem.checkCollision();
     collisionSystem.resolveCollision();		// resolve collisions pushes back entities if they overlap in movementsystem
-    entityCleanSystem.cleanProjectiles();
-    entityCleanSystem.clearDefeatedPlayers();
+
+    // now clean systems return a list of what they delete, to make sending to client easier
+    delProj = entityCleanSystem.cleanProjectiles();
+    delMisc = entityCleanSystem.clearDeletionQueue();
 }
 
 void PlayState_S::broadcastStates(Server& server)
@@ -166,7 +182,7 @@ void PlayState_S::broadcastStates(Server& server)
         state.projectileID = projectile;
         state.x = scene.GetEntityData<TransformComponent>(projectile).position.x;   // rip 
         state.y = scene.GetEntityData<TransformComponent>(projectile).position.y;   // its cache miss time
-        projectileStates.push_back(state);                                              // but really no feels to refactor
+        projectileStates.push_back(state);                                          // but really no feels to refactor
     }
 
     // Only send a packet if there are players to update
@@ -184,7 +200,7 @@ void PlayState_S::broadcastStates(Server& server)
         enet_host_broadcast(server.getServerHost(), 0, packet);
     }
 
-    if (!projectileStates.empty())  
+    if (!projectileStates.empty())  // projectile states on channel 1
     {
         // Create an ENet packet.
         // The data is the start of our vector, and the length is the total size in bytes.
@@ -193,9 +209,23 @@ void PlayState_S::broadcastStates(Server& server)
             projectileStates.size() * sizeof(ProjectileState),
             ENET_PACKET_FLAG_RELIABLE);
 
-        std::cout << "Sending packet: " << projectileStates.size() << std::endl;
-        enet_host_broadcast(server.getServerHost(), 0, packet);
+        // std::cout << "Sending packet: " << projectileStates.size() << std::endl;
+        enet_host_broadcast(server.getServerHost(), 1, packet);
     }
+
+    // deletions on channel 3
+    if (!(delProj.empty() && delMisc.empty()))
+    {
+        delProj.insert(delProj.end(), delMisc.begin(), delMisc.end());  // lol yuck 
+        ENetPacket* packet = enet_packet_create(delProj.data(),
+            delProj.size() * sizeof(PacketProjectileDestroyed),
+            ENET_PACKET_FLAG_RELIABLE);
+        
+        // send the packet to all connected clients on channel 3
+        std::cout << "sending deletion packet" << std::endl;
+        enet_host_broadcast(server.getServerHost(), 3, packet);
+    }
+
 }
 
 void PlayState_S::onExit(Server& server)

@@ -29,7 +29,7 @@ public:
 		activeEntities[entity] = false;
 	}
 
-	std::array<bool, MAX_ENTITIES>& GetActiveEntities()
+	std::array<bool, MAX_ENTITIES>& GetActiveEntities()	// returns an array of entity active states, not the number 
 	{
 		return activeEntities;
 	}

@@ -21,6 +21,9 @@ public:
     AssetManager* assets;   // assets belongs to the client now
 
     ENetPeer* getServerPeer() const { return serverPeer; }      // again if theres a better way
+    void setServerPeer(ENetPeer* peer) { serverPeer = peer; }
+
+    ENetHost* getClientHost() const { return clientHost; }
     bool isRunning = false; // if theres a better way to do this go ahead
 
 private:

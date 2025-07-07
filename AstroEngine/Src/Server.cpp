@@ -35,7 +35,7 @@ bool Server::init()
     address.port = 1234;          // The port clients will connect to
 
     // Create the server host
-    serverHost = enet_host_create(&address, 32, 3, 0, 0);
+    serverHost = enet_host_create(&address, 32, 5, 0, 0);
 
     if (serverHost == nullptr) {
         std::cerr << "An error occurred while trying to create an ENet server host." << std::endl;

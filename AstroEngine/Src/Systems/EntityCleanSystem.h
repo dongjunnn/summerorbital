@@ -7,7 +7,8 @@ class EntityCleanSystem
 public:
 	EntityCleanSystem(SceneInstance& sceneRef) : scene(sceneRef) {}
 
-	void cleanProjectiles()
+	// cleans projectiles and returns a vector of deletions
+	std::vector<Entity> cleanProjectiles()
 	{
 		toDelete.clear();	// clears previous tick's list of entities slated for deletion
 
@@ -36,31 +37,27 @@ public:
 			scene.DestroyEntity(e);
 			std::cout << "Destroyed entity " << e << ", Projectile Count: " << projectiles.size() << std::endl;
 		}
+
+		return toDelete;
 	}
 
-	void clearDefeatedPlayers()
+	std::vector<Entity> clearDeletionQueue()
 	{
 		toDelete.clear();
 
-		auto& players = scene.GetView<PlayerComponent>();
-
-		for (Entity player : players)
+		for (Entity entity : scene.GetDeletionQueue())
 		{
-			int& hp = scene.GetEntityData<HealthComponent>(player).hp;
-
-			if (hp <= 0)
-			{
-				toDelete.push_back(player);
-			}
+			toDelete.push_back(entity);		// is this step necessary? im just doing it cuz the above does it too lol
 		}
 
 		for (Entity e : toDelete)
 		{
-			//bool& isPlayerAlive = scene.GetEntityData<PlayerComponent>(e).isAlive;
-			//SetEntityData<PlayerComponent>(player, { true })
 			scene.DestroyEntity(e);
-			std::cout << "Destroyed player  " << e << ", Player Count: " << players.size() << std::endl;
+			std::cout << "Destroyed Entity  " << e << std::endl;
 		}
+
+		scene.ClearDeletionQueue();
+		return toDelete;
 	}
 
 private:

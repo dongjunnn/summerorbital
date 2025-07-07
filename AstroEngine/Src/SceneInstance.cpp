@@ -151,9 +151,28 @@ void SceneInstance::AddUIElement(std::string id, Entity entity)
     uiElementMap.emplace(id, entity);
 }
 
+bool SceneInstance::IsUIElement(std::string id)
+{
+    return uiElementMap.count(id);
+}
 
 // get entity by UI element map id
 Entity SceneInstance::GetUIElement(std::string id)
 {
     return uiElementMap[id];
+}
+
+std::vector<Entity>& SceneInstance::GetDeletionQueue()
+{
+    return deletionQueue;
+}
+
+void SceneInstance::AppendDeletionQueue(Entity entity)
+{
+    deletionQueue.emplace_back(entity);
+}
+
+void SceneInstance::ClearDeletionQueue()
+{
+    deletionQueue.clear();
 }

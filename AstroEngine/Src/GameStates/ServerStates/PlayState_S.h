@@ -14,4 +14,7 @@ public:
 
 private:
 	Map* map;
+	std::vector<Entity> delProj;
+	std::vector<Entity> delPlyr;
+	std::vector<Entity> delMisc;
 };

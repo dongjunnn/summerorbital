@@ -28,19 +28,9 @@ bool Client::init() {
         return false;
     }
 
-    clientHost = enet_host_create(NULL, 1, 2, 0, 0);
+    clientHost = enet_host_create(NULL, 1, 5, 0, 0);
     if (clientHost == nullptr) {
         std::cerr << "An error occurred while trying to create a client host." << std::endl;
-        return false;
-    }
-
-    ENetAddress address;
-    enet_address_set_host(&address, "25.7.168.213"); // localhost
-    address.port = 1234;
-
-    serverPeer = enet_host_connect(clientHost, &address, 2, 0);
-    if (serverPeer == nullptr) {
-        std::cerr << "No available peers for initiating an ENet connection." << std::endl;
         return false;
     }
 

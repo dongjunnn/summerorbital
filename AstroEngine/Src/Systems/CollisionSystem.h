@@ -119,11 +119,9 @@ public:
 				int& dmg = scene.GetEntityData<ProjectileComponent>(colEvent.b).dmg;
 
 				hp -= dmg;
-				
 				std::cout << "Player " << colEvent.a << " is hit with remaining hp: " << hp << std::endl;
 
-				scene.DestroyEntity(colEvent.b);
-				std::cout << "player-projectile resolution, 0 for destroyed projectile: " << scene.isActive(colEvent.b) << std::endl;
+				scene.AppendDeletionQueue(colEvent.b);
 				break;
 			}
 			default:

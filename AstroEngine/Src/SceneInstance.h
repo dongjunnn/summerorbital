@@ -22,6 +22,7 @@ public:
 
 	virtual ~SceneInstance() = default;
 	
+	// creation helpers
 	Entity CreateProjectile(const Vector2D position, const Vector2D velocity, const SpriteComponent sprite);
 	
     Entity CreateProjectile(const Vector2D position, const Vector2D velocity, const Vector2D colDimensions);
@@ -30,14 +31,25 @@ public:
 
 	Entity CreatePlayer(const Vector2D position, const Vector2D colDimensions);
 
+	// UI methods
 	Entity CreateUIHealthBorder(const Vector2D position, const SpriteComponent sprite);
 
 	Entity CreateUIHealthMeter(const Vector2D position, const SpriteComponent sprite);
 
 	void AddUIElement(std::string id, Entity entity);
 
+	bool IsUIElement(std::string id);
+
 	Entity GetUIElement(std::string id);
+
+	// deletion queue methods
+	std::vector<Entity>& GetDeletionQueue();
+
+	void AppendDeletionQueue(Entity entity);
+
+	void ClearDeletionQueue();
 
 private:
 	UIElementMap uiElementMap;
+	std::vector<Entity> deletionQueue;
 };

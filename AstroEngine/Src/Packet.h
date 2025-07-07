@@ -4,6 +4,7 @@
 enum class PacketType : uint8_t {
     PLAYER_INPUT,
     PROJECTILE_CREATED,
+    PROJECTILE_DESTROYED,
     PROJECTILE_STATE,
     PLAYER_STATE
 };
@@ -39,4 +40,8 @@ struct PacketProjectileCreated {
     uint32_t entityID;
     Vector2D position;
     Vector2D velocity;
+};
+
+struct PacketProjectileDestroyed {
+    uint32_t entityID;
 };
