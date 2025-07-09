@@ -34,3 +34,26 @@ SDL_Texture* AssetManager::GetTexture(std::string id)
 	}
 	return textures[id];
 }
+
+void AssetManager::AddFont(std::string id, const char* path, SDL_Renderer* renderer, uint8_t fontSize)
+{
+	TTF_Font* font = TTF_OpenFont(path, fontSize);
+	if (!font) {
+		std::cerr << "Font load for: " << path << std::endl;
+		return;
+	}
+	fonts.emplace(id, font);
+}
+
+TTF_Font* AssetManager::GetFont(std::string id)
+{
+	auto it = fonts.find(id);
+	if (it != fonts.end()) {
+		return it->second;
+	}
+	else {
+		std::cerr << "Font not found: " << id << std::endl;
+		return nullptr;
+	}
+	return fonts[id];
+}

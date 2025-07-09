@@ -446,6 +446,12 @@
     <ClInclude Include="AstroEngine\Src\Components\RotationComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Components\LabelComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SDL2_ttf-2.24.0\x86_64-w64-mingw32\include\SDL2\SDL_ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="enet-1.3.18\docs\html\search\all_0.html" />

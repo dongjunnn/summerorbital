@@ -145,10 +145,30 @@ Entity SceneInstance::CreateUIHealthMeter(const Vector2D position, const SpriteC
     return uiMeter;
 }
 
+Entity SceneInstance::CreateUITextField(const Vector2D position, const SpriteComponent sprite)
+{
+    Entity textField = CreateEntity();
+    AddComponent<TransformComponent>(textField);
+    AddComponent<SpriteComponent>(textField);
+
+    SetEntityData<TransformComponent>(textField, { position });
+    SetEntityData<SpriteComponent>(textField, sprite);
+
+    ComponentBitSet newSig = GetEntitySignature(textField);		// updating views
+    UpdateViews(textField, ComponentBitSet{}, newSig);
+    
+    return textField;
+}
+
 // adds entity to scene UI element map
 void SceneInstance::AddUIElement(std::string id, Entity entity)
 {
     uiElementMap.emplace(id, entity);
+}
+
+void SceneInstance::RemoveUIElement(std::string id)
+{
+    uiElementMap.erase(id);
 }
 
 bool SceneInstance::IsUIElement(std::string id)
@@ -159,7 +179,13 @@ bool SceneInstance::IsUIElement(std::string id)
 // get entity by UI element map id
 Entity SceneInstance::GetUIElement(std::string id)
 {
-    return uiElementMap[id];
+    if (uiElementMap.find(id) != uiElementMap.end()) {
+        return uiElementMap[id];
+    }
+    else {
+        std::cerr << "[Client] UIElement does not exist" << std::endl;
+        return 0;
+    }
 }
 
 std::vector<Entity>& SceneInstance::GetDeletionQueue()

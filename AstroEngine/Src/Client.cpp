@@ -17,6 +17,7 @@ Client::~Client() {
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     IMG_Quit();
+    TTF_Quit();
     SDL_Quit();
 
     enet_deinitialize();
@@ -100,6 +101,10 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
         return;
     }
     
+    if (TTF_Init() == -1) {
+        std::cerr << "Failed to initialize fonts: " << TTF_GetError() << std::endl;
+    }
+
     this->assets = new AssetManager();
 
     assets->AddTexture("titleScreen", "assets/TitleScreen.png", renderer);  // now that renderer is not static
@@ -111,4 +116,8 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
     assets->AddTexture("healthBorder", "assets/HealthBar.png", renderer);
     assets->AddTexture("healthMeter", "assets/HealthMeter.png", renderer);
     assets->AddTexture("ship", "assets/shipSprite.png", renderer);
+    assets->AddTexture("addressField", "assets/AddressField.png", renderer);
+    assets->AddTexture("connectionFailedMsg", "assets/ConnectionFailed.png", renderer);
+
+    assets->AddFont("KennyFuture_48", "assets/Kenney Future.ttf", renderer, 48);
 }

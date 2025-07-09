@@ -18,6 +18,7 @@ public:
 		CreateComponent<AnimationComponent>();
 		CreateComponent<HealthComponent>();
 		CreateComponent<RotationComponent>();
+		CreateComponent<LabelComponent>();
 	}
 
 	virtual ~SceneInstance() = default;
@@ -36,7 +37,11 @@ public:
 
 	Entity CreateUIHealthMeter(const Vector2D position, const SpriteComponent sprite);
 
+	Entity CreateUITextField(const Vector2D position, const SpriteComponent sprite);
+
 	void AddUIElement(std::string id, Entity entity);
+
+	void RemoveUIElement(std::string id);
 
 	bool IsUIElement(std::string id);
 

@@ -1,5 +1,6 @@
 #include "../../Components/Components.h"
 #include "PlayState.h"
+#include "TitleState.h"
 #include "../../Packet.h" 
 #include "../../Map.h"
 #include <cstring>
@@ -12,48 +13,57 @@ void PlayState::onEnter(Client& client)
 
     // initiating connection only on play
     ENetAddress address;
-    enet_address_set_host(&address, "127.0.0.1"); // localhost
+    enet_address_set_host(&address, givenAddress.c_str()); // given address from title state
     address.port = 1234;
+
+    std::cout << "[CLIENT] Attempting connection to " << givenAddress.c_str() << std::endl;
 
     ENetPeer* peer = enet_host_connect(client.getClientHost(), &address, 5, 0);
     client.setServerPeer(peer);
 
     if (peer == nullptr) {
         std::cerr << "No available peers for initiating an ENet connection." << std::endl;
+        client.changeState(new TitleState());
     }
 
-    while (!scene.IsUIElement("thisPlayer"))
+    bool isConnected = false;
+
+    ENetEvent event;
+    while (enet_host_service(client.getClientHost(), &event, 1000) > 0)    
     {
-        ENetEvent event;
-        while (enet_host_service(client.getClientHost(), &event, 0) > 0)
+        if (event.type == ENET_EVENT_TYPE_RECEIVE && event.channelID == 4)
         {
-            if (event.type == ENET_EVENT_TYPE_RECEIVE && event.channelID == 4)
-            {
-                PlayerState state;
-                memcpy(&state, event.packet->data, sizeof(state));
+            PlayerState state;
+            memcpy(&state, event.packet->data, sizeof(state));
 
-                SpriteComponent playerSprite{
-                        client.assets->GetTexture("ship"),
-                        {0,0,96,96},
-                        { (int)state.x,  (int)state.y, 32, 32 }
-                };
-                Entity clientID = scene.CreatePlayer({ state.x, state.y }, playerSprite);
-                scene.AddUIElement("thisPlayer", clientID);
-                serverToClientEntityMap[state.entityID] = clientID;
-
-                enet_packet_destroy(event.packet);
-                break;
-            }
+            SpriteComponent playerSprite{
+                    client.assets->GetTexture("ship"),
+                    {0,0,96,96},
+                    { (int)state.x,  (int)state.y, 32, 32 }
+            };
+            Entity clientID = scene.CreatePlayer({ state.x, state.y }, playerSprite);
+            std::cout << "local player created" << std::endl;
+            scene.AddUIElement("thisPlayer", clientID);
+            serverToClientEntityMap[state.entityID] = clientID;
+            initUI(client);
             enet_packet_destroy(event.packet);
+            isConnected = true;
+            break;
         }
+        enet_packet_destroy(event.packet);
     }
 
-    initUI(client);
+    if (!isConnected)
+    {
+        std::cerr << "[CLIENT] Connection timeout: server did not respond." << std::endl;
+        enet_peer_reset(peer);
+        client.changeState(new TitleState(1));
+        return;
+    }
 }
 
 void PlayState::handleInput(Client& client)
 {
-	// --- NEWLY IMPLEMENTED ---
 	SDL_PollEvent(&client.event);		
 
 	if (client.event.type == SDL_QUIT)

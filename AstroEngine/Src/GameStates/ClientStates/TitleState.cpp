@@ -2,36 +2,76 @@
 #include "PlayState.h"
 #include "../../Components/Components.h"
 
-
 void TitleState::onEnter(Client& client)
 {
+	Entity addressField = scene.CreateEntity();
+	scene.AddComponent<TransformComponent>(addressField);
+	scene.AddComponent<SpriteComponent>(addressField);
+	scene.AddComponent<LabelComponent>(addressField);
+
+	TransformComponent addrloc = { Vector2D(120 ,320) };
+	SpriteComponent addrspr = { client.assets->GetTexture("addressField"), { 0, 0, 544, 96 }, {120, 320, 544, 96} };
+
+	scene.SetEntityData<TransformComponent>(addressField, addrloc);
+	scene.SetEntityData<SpriteComponent>(addressField, addrspr);
+	scene.SetEntityData<LabelComponent>(addressField, { "127.0.0.1",
+														client.assets->GetFont("KennyFuture_48"),
+														SDL_Color {255,255,255,255},
+														false, 160, 20, true });
+
+	scene.AddUIElement("addressField", addressField);
+
+
 	Entity playButton = scene.CreateEntity();		
 	scene.AddComponent<TransformComponent>(playButton);
 	scene.AddComponent<SpriteComponent>(playButton);
 	scene.AddComponent<ClickableComponent>(playButton);
 
-	TransformComponent playbtnloc = { Vector2D(280, 320) };
-	SpriteComponent playbtnspr = { client.assets->GetTexture("playButton"), {0,0, 480, 160}, {280, 320, 240, 80} };
-	ClickableComponent playbtnclk = { playbtnspr.dstRect, [&client]() 
+	TransformComponent playbtnloc = { Vector2D(280, 448) };
+	SpriteComponent playbtnspr = { client.assets->GetTexture("playButton"), {0, 0, 480, 160}, {280, 448, 240, 80} };
+	ClickableComponent playbtnclk = { playbtnspr.dstRect, [&client, this, addressField]() 
 		{ 
-			client.changeState(new PlayState()); 
+			SDL_StopTextInput();
+			std::string address = scene.GetEntityData<LabelComponent>(addressField).text;
+			client.changeState(new PlayState(address)); 
 		} };
 
 	scene.SetEntityData<TransformComponent>(playButton, playbtnloc);
 	scene.SetEntityData<SpriteComponent>(playButton, playbtnspr);
 	scene.SetEntityData<ClickableComponent>(playButton, playbtnclk);
 
+	if (status == 1)
+	{
+		Entity connectFailedMsg = scene.CreateEntity();
+		
+		scene.AddComponent<TransformComponent>(connectFailedMsg);
+		scene.AddComponent<SpriteComponent>(connectFailedMsg);
+
+		TransformComponent connectionErrorloc = { Vector2D(180, 560) };
+		SpriteComponent connectionErrorspr = { client.assets->GetTexture("connectionFailedMsg"), {0, 0, 432, 40}, { 180, 560, 432, 40 } };
+	
+		scene.SetEntityData<TransformComponent>(connectFailedMsg, connectionErrorloc);
+		scene.SetEntityData<SpriteComponent>(connectFailedMsg, connectionErrorspr);
+
+		scene.AddUIElement("connectFailed", connectFailedMsg);
+	
+	}
+
+	SDL_StartTextInput();
 }
 
 void TitleState::handleInput(Client& client)
 {
-	while (SDL_PollEvent(&client.event))		// checking for input events
-	{
-		if (client.event.type == SDL_QUIT)
-			client.isRunning = false;
+	Entity addressField = scene.GetUIElement("addressField");
 
-		clickableSystem.ProcessClicks(client.event);	// processing them yay
+	SDL_PollEvent(&client.event);
+	if (client.event.type == SDL_QUIT)
+	{
+		client.isRunning = false;
 	}
+
+	clickableSystem.ProcessClicks(client.event);	// processing them yay
+	clickableSystem.ProcessAddressInput(client.event);
 }
 
 void TitleState::handleEnetEvent(Client& client, ENetEvent& event)
@@ -54,7 +94,10 @@ void TitleState::handleEnetEvent(Client& client, ENetEvent& event)
 
 void TitleState::update(Client& client)
 {
-	// nothing for now
+	if (status == 1)
+	{
+		uiSystem.displayConnectionErrorMsg();
+	}
 }
 
 void TitleState::render(Client& client)
@@ -65,6 +108,7 @@ void TitleState::render(Client& client)
 	SDL_RenderCopy(renderer, client.assets->GetTexture("titleScreen"), NULL, NULL);	// for background
 
 	renderSystem.render(renderer);													// renders entities 
+	renderSystem.renderText(renderer);												// renders text on top
 
 	SDL_RenderPresent(renderer);
 }

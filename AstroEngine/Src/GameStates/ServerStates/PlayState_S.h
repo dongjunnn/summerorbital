@@ -12,6 +12,9 @@ public:
 	void broadcastStates(Server& server) override;
 	void onExit(Server& server) override;
 
+	void handleUserMovementInput(Entity playerID, const PlayerInputPacket& input);
+	void handleUserFiring(Entity playerID, const PlayerInputPacket& input, Server& server);
+
 private:
 	Map* map;
 	std::vector<Entity> delProj;

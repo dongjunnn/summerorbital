@@ -15,6 +15,8 @@ public:
 		int& healthBarLevelsrc = scene.GetEntityData<SpriteComponent>(healthBar).srcRect.w;	// max hp hbl = 224 min hp hbl = 64
 		int& healthBarLeveldst = scene.GetEntityData<SpriteComponent>(healthBar).dstRect.w;
 
+		//if (!scene.IsUIElement("thisPlayer")) { return; }	// lazy guard clause, totally not because of a lack of planning
+
 		Entity thisPlayer = scene.GetUIElement("thisPlayer");
 		int& thisHP = scene.GetEntityData<HealthComponent>(thisPlayer).hp;
 
@@ -27,6 +29,26 @@ public:
 		}
 
 		healthBarLevelsrc = healthBarLeveldst = (int)(64.0f + (thisHP / 100.0f) * 160.0f);     // currently players all have 100hp
+	}
+
+	void displayConnectionErrorMsg()	// for title screen when connection cannot be made 
+	{
+		
+		if (scene.IsUIElement("connectFailed"))
+		{
+			Entity errorMsg = scene.GetUIElement("connectFailed");
+			SpriteComponent& errorMsgSpr = scene.GetEntityData<SpriteComponent>(errorMsg);
+			if (errorMsgSpr.alpha > 0)
+			{
+				errorMsgSpr.alpha -= 1;
+				SDL_SetTextureAlphaMod(errorMsgSpr.texture, errorMsgSpr.alpha);
+			}
+			else
+			{
+				scene.DestroyEntity(errorMsg);
+				scene.RemoveUIElement("connectFailed");		// as you can see, the UI element list was more of an afterthought
+			}
+		}
 	}
 
 private:

@@ -45,82 +45,13 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
 
     case ENET_EVENT_TYPE_RECEIVE:
     {
-        /* std::cout << "[SERVER] Received a packet of length "
-            << event.packet->dataLength << std::endl;  */
-
-            // This is where you will process player input
         Entity playerID = (uintptr_t)event.peer->data;
 
         PlayerInputPacket input;
         memcpy(&input, event.packet->data, sizeof(PlayerInputPacket));
 
-        // Update the player's velocity based on the input
-        Vector2D& vel = scene.GetEntityData<VelocityComponent>(playerID).velocity;
-        float& plyrAngle = scene.GetEntityData<RotationComponent>(playerID).angle;
-
-        // vel.velocity = Vector2D(0, 0); // Reset velocity; rip syntax, maybe velocity component could have just been x,y instead of a Vec2D
-        
-        float accel = 0.2f;
-        Vector2D normalised = vel.getNormalised();
-        Vector2D bias = Vector2D(0.0f, -1.0f).scale(accel);
-        float magnitude = vel.magnitude();
-        float brake = 0.1f;
-        float rot_speed = 0.05f;     // in radians
-
-        // if w is pressed and the increase in velocity is less than the difference between current and max velocities, add velocity
-        if (input.up && (MAX_VEL - magnitude >= bias.magnitude()))
-        {
-            vel = vel + bias.rotateACW(plyrAngle);
-            //vel.velocity.y = -1;
-        }
-        else if (input.up){ vel += bias.scale(MAX_VEL - bias.magnitude()).rotateACW(plyrAngle); }
-
-        // if s is pressed and the decrease in velocity doesnt lead to negative magnitude, decrease velocity
-        if (input.down && (magnitude - normalised.scale(brake).magnitude() >= 0.0f))
-        {
-            vel -= normalised.scale(brake);
-            //vel.velocity.y = 1;
-        } 
-        else if (input.down) { vel.x = 0.0f; vel.y = 0.0f; }
-
-        // if a is pressed, rotate clockwise
-        if (input.left)
-        {
-            plyrAngle -= rot_speed;
-           //vel.velocity.x = -1;
-        }
-        if (input.right)
-        {
-            plyrAngle += rot_speed;
-            //vel.velocity.x = 1;
-        }
-
-        if (!(input.up || input.down))
-        {
-            vel -= normalised.scale(VEL_DECAY);
-        }
-        
-
-        if (input.fireButtonPressed) {
-            // projectile creation on 2
-
-            TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
-            Vector2D projectileVelocity = { 5.0f, 0.0f }; // can change this velocity TODO
-
-            Entity newProjectileID = scene.CreateProjectile((playerTransform.position + Vector2D(33.0f, 0.0f)), // offset spawn position so it
-                                                             projectileVelocity, {32, 32});                   // doesnt collide with player
-                                                                                                              // that spawned it
-            PacketProjectileCreated projectilePacket;
-            projectilePacket.entityID = newProjectileID;
-            projectilePacket.position = playerTransform.position + Vector2D(33.0f, 0.0f);
-            projectilePacket.velocity = projectileVelocity;
-
-            ENetPacket* packet = enet_packet_create(&projectilePacket,
-                sizeof(PacketProjectileCreated),
-                ENET_PACKET_FLAG_RELIABLE);
-            
-            enet_host_broadcast(server.getServerHost(), 2, packet); 
-        }
+        handleUserMovementInput(playerID, input);
+        handleUserFiring(playerID, input, server);
 
         enet_packet_destroy(event.packet);
         break;
@@ -129,10 +60,11 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
     case ENET_EVENT_TYPE_DISCONNECT:
     {
         std::cout << "[SERVER] A client disconnected." << std::endl;
-        // Later, this is where you will destroy the player entity for this client
+        
         if (event.peer->data != NULL) {
             Entity playerID = (uintptr_t)event.peer->data;
             scene.DestroyEntity(playerID); // Remove the player entity from the ECS
+            scene.AppendDeletionQueue(playerID); // Tell other clients it is destroyed
             std::cout << "[SERVER] Destroyed player with ID " << playerID << "." << std::endl;
         }
         break;
@@ -231,6 +163,75 @@ void PlayState_S::broadcastStates(Server& server)
 void PlayState_S::onExit(Server& server)
 {
     delete map;
+}
+
+void PlayState_S::handleUserMovementInput(Entity playerID, const PlayerInputPacket& input)
+{
+    // Update the player's velocity based on the input
+    Vector2D& vel = scene.GetEntityData<VelocityComponent>(playerID).velocity;
+    float& plyrAngle = scene.GetEntityData<RotationComponent>(playerID).angle;
+
+    float accel = 0.2f;
+    Vector2D normalised = vel.getNormalised();
+    Vector2D bias = Vector2D(0.0f, -1.0f).scale(accel);
+    float magnitude = vel.magnitude();
+    float brake = 0.1f;
+    float rot_speed = 0.05f;     // in radians
+
+    // if w is pressed and the increase in velocity is less than the difference between current and max velocities, add velocity
+    if (input.up && (MAX_VEL - magnitude >= bias.magnitude()))
+    {
+        vel = vel + bias.rotateACW(plyrAngle);
+    }
+    else if (input.up) { vel += bias.scale(MAX_VEL - bias.magnitude()).rotateACW(plyrAngle); }
+
+    // if s is pressed and the decrease in velocity doesnt lead to negative magnitude, decrease velocity
+    if (input.down && (magnitude - normalised.scale(brake).magnitude() >= 0.0f))
+    {
+        vel -= normalised.scale(brake);
+    }
+    else if (input.down) { vel.x = 0.0f; vel.y = 0.0f; }
+
+    // if a is pressed, rotate clockwise
+    if (input.left)
+    {
+        plyrAngle -= rot_speed;
+    }
+    if (input.right)
+    {
+        plyrAngle += rot_speed;
+    }
+
+    if (!(input.up || input.down))
+    {
+        vel -= normalised.scale(VEL_DECAY);
+        if (std::abs(vel.x) < 0.000001) vel.x = 0;
+        if (std::abs(vel.y) < 0.000001) vel.y = 0;
+    }
+}
+
+void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& input, Server& server)
+{
+    if (input.fireButtonPressed) {
+        // projectile creation on 2
+
+        TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
+        Vector2D projectileVelocity = { 5.0f, 0.0f }; // can change this velocity TODO
+
+        Entity newProjectileID = scene.CreateProjectile((playerTransform.position + Vector2D(33.0f, 0.0f)), // offset spawn position so it
+            projectileVelocity, { 32, 32 });                   // doesnt collide with player
+        // that spawned it
+        PacketProjectileCreated projectilePacket;
+        projectilePacket.entityID = newProjectileID;
+        projectilePacket.position = playerTransform.position + Vector2D(33.0f, 0.0f);
+        projectilePacket.velocity = projectileVelocity;
+
+        ENetPacket* packet = enet_packet_create(&projectilePacket,
+            sizeof(PacketProjectileCreated),
+            ENET_PACKET_FLAG_RELIABLE);
+
+        enet_host_broadcast(server.getServerHost(), 2, packet);
+    }
 }
 
 

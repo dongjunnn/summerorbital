@@ -12,7 +12,8 @@ class Map;
 class PlayState : public ClientState
 {
 public:
-	PlayState() : ClientState() {};
+	PlayState(const std::string address) 
+		: ClientState(), givenAddress(address) {};
 
 	void onEnter(Client& client) override;
 	void handleInput(Client& client) override;
@@ -25,7 +26,9 @@ public:
 	
 private:
 	Map* map;
+	std::string givenAddress;
 
 	std::unordered_map<std::uint32_t, Entity> serverToClientEntityMap; // to match server id to entity of client i think
+
 
 };
