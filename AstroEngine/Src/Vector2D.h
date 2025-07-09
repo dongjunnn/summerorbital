@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <cmath>
 
 class Vector2D
 {
@@ -38,7 +39,7 @@ public:
     // scales vector by scale factor
     Vector2D& scale(float scale);
 
-    float magnitude() const { return std::sqrt(std::powf(x, 2) + std::powf(y, 2)); }    // check float, something is off with normal
+    float magnitude() const { return std::sqrt(std::pow(x, 2) + std::pow(y, 2)); }    // check float, something is off with normal
 
     friend std::ostream& operator<<(std::ostream& stream, const Vector2D& vec);
 };

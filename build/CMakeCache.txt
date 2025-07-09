@@ -227,6 +227,9 @@ PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
 //The directory containing a CMake configuration file for SDL2.
 SDL2_DIR:PATH=/usr/lib/x86_64-linux-gnu/cmake/SDL2
 
+//The directory containing a CMake configuration file for SDL2_image.
+SDL2_image_DIR:PATH=SDL2_image_DIR-NOTFOUND
+
 //Value Computed by CMake
 enet_BINARY_DIR:STATIC=/mnt/c/Users/dj8ch/Documents/github/summerorbital/build/enet-1.3.18
 
@@ -347,7 +350,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=2
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
