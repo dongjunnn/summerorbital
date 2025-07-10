@@ -2,6 +2,7 @@
 #include "../../Server.h"
 #include "../../Map.h"
 #include <cstring>
+#include <cmath> 
 
 void PlayState_S::onEnter(Server& server)
 {
@@ -213,17 +214,26 @@ void PlayState_S::handleUserMovementInput(Entity playerID, const PlayerInputPack
 void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& input, Server& server)
 {
     if (input.fireButtonPressed) {
-        // projectile creation on 2
+        // projectile creation on channel 2
 
         TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
-        Vector2D projectileVelocity = { 5.0f, 0.0f }; // can change this velocity TODO
+        RotationComponent& playerRotation = scene.GetEntityData<RotationComponent>(playerID);
 
-        Entity newProjectileID = scene.CreateProjectile((playerTransform.position + Vector2D(33.0f, 0.0f)), // offset spawn position so it
-            projectileVelocity, { 32, 32 });                   // doesnt collide with player
-        // that spawned it
+        float projectileSpeed = 5.0f;
+        float spawnDistance = 40.0f;  // How far from the player's center the projectile should spawn
+
+        float shootingAngle = playerRotation.angle - (M_PI / 2.0f);
+
+        Vector2D projectileVelocity = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(projectileSpeed);
+
+        Vector2D spawnOffset = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(spawnDistance);
+        Vector2D spawnPosition = playerTransform.position + spawnOffset;
+        
+        Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 32, 32 });
+
         PacketProjectileCreated projectilePacket;
         projectilePacket.entityID = newProjectileID;
-        projectilePacket.position = playerTransform.position + Vector2D(33.0f, 0.0f);
+        projectilePacket.position = spawnPosition;
         projectilePacket.velocity = projectileVelocity;
 
         ENetPacket* packet = enet_packet_create(&projectilePacket,
@@ -233,5 +243,3 @@ void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& inp
         enet_host_broadcast(server.getServerHost(), 2, packet);
     }
 }
-
-

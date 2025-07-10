@@ -9,11 +9,14 @@ class KeyboardController : public Component
 public:
     TransformComponent *transform;
 	SpriteComponent* sprite;
+    RotationComponent* rotation;
+
 
     void init() override
     {
         transform = &entity->getComponent<TransformComponent>();
 		sprite = &entity->getComponent<SpriteComponent>();
+        rotation = &entity->getComponent<RotationComponent>();
     }
 
 
@@ -48,24 +51,21 @@ public:
         {
             switch (Game::event.key.keysym.sym)
             {
-            case SDLK_SPACE:
-                float proj_x;
-                float proj_y;
-                float proj_velx;
-                if (transform->velocity.x >= 0)
-                { 
-                    proj_velx = transform->velocity.x + 0.5f; 
-                    proj_x = transform->position.x + transform->width;
-                    proj_y = transform->position.y;
-                }
-                else 
-                { 
-                    proj_velx = transform->velocity.x - 0.5f; 
-                    proj_x = transform->position.x - transform->width;
-                    proj_y = transform->position.y;
-                }
-               
-                Game::assets->CreateProjectile(Vector2D(proj_x, proj_y), Vector2D(proj_velx, 0.0f), 15, "projectile");
+            case SDLK_SPACE: {
+                float proj_x = transform->position.x + transform->width / 2.0f;
+                float proj_y = transform->position.y + transform->height / 2.0f;
+
+                float angleRad = rotation->angle * (M_PI / 180.0f);
+                float speed = 1.5f;
+                float vx = cos(angleRad) * speed;
+                float vy = sin(angleRad) * speed;
+
+                float offsetDist = 10.0f;
+                Vector2D offset = Vector2D(cos(angleRad), sin(angleRad)) * offsetDist;
+                Vector2D spawnPos = Vector2D(proj_x, proj_y) + offset;
+
+                Game::assets->CreateProjectile(spawnPos, Vector2D(vx, vy), 15, "projectile");
+                break;
             }
         }
         if (Game::event.type == SDL_KEYUP)
