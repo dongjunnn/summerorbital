@@ -119,5 +119,6 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
     assets->AddTexture("addressField", "assets/AddressField.png", renderer);
     assets->AddTexture("connectionFailedMsg", "assets/ConnectionFailed.png", renderer);
 
+    assets->AddFont("KennyFuture_12", "assets/Kenney Future.ttf", renderer, 12);
     assets->AddFont("KennyFuture_48", "assets/Kenney Future.ttf", renderer, 48);
 }

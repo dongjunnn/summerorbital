@@ -7,7 +7,6 @@ public:
 	RenderSystem(SceneInstance& sceneRef);
 
 	void render(SDL_Renderer* renderer);
-
 	void renderText(SDL_Renderer* renderer);
 
 private:

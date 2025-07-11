@@ -81,6 +81,9 @@
     <ClCompile Include="AstroEngine\Src\SceneInstance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AstroEngine\Src\ClientData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AstroEngine\Src\Components\AnimationComponent.h">
@@ -450,6 +453,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SDL2_ttf-2.24.0\x86_64-w64-mingw32\include\SDL2\SDL_ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\GamePhases\Server\MatchPhase_S.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\ClientData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\GamePhases\Client\MatchPhase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Systems\PlayerSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

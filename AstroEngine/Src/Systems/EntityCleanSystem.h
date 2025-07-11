@@ -41,7 +41,7 @@ public:
 		return toDelete;
 	}
 
-	std::vector<Entity> clearDeletionQueue()
+	std::vector<Entity> clearDeletionQueue()	// this deletes everything in sceneInstance deletion queue
 	{
 		toDelete.clear();
 
@@ -56,8 +56,23 @@ public:
 			std::cout << "Destroyed Entity  " << e << std::endl;
 		}
 
-		scene.ClearDeletionQueue();
+		scene.ClearDeletionQueue();		// then tells sceneInstance that everything has been deleted
 		return toDelete;
+	}
+
+	void handleDefeatedPlayers()		// this could be event driven instead
+	{												// like only check when a player is hit
+		auto& players = scene.GetView<PlayerComponent>();	// this should do for now though
+
+		for (Entity player : players)
+		{
+			int& hp = scene.GetEntityData<HealthComponent>(player).hp;
+			if (hp <= 0)
+			{
+				PlayerComponent& plyr = scene.GetEntityData<PlayerComponent>(player);
+				plyr.isAlive = false;
+			}
+		}
 	}
 
 private:

@@ -11,6 +11,8 @@ void PlayState::onEnter(Client& client)
 	map = new Map("terrain", 1, 32);
 	map->LoadMap("assets/map.map", scene, *client.assets, 25, 20);
 
+    matchPhase = new MatchPhase(scene);
+
     // initiating connection only on play
     ENetAddress address;
     enet_address_set_host(&address, givenAddress.c_str()); // given address from title state
@@ -26,7 +28,7 @@ void PlayState::onEnter(Client& client)
         client.changeState(new TitleState());
     }
 
-    bool isConnected = false;
+    bool isConnected = false;   // maybe this has to be global soon
 
     ENetEvent event;
     while (enet_host_service(client.getClientHost(), &event, 1000) > 0)    
@@ -45,7 +47,9 @@ void PlayState::onEnter(Client& client)
             std::cout << "local player created" << std::endl;
             scene.AddUIElement("thisPlayer", clientID);
             serverToClientEntityMap[state.entityID] = clientID;
+
             initUI(client);
+
             enet_packet_destroy(event.packet);
             isConnected = true;
             break;
@@ -223,6 +227,16 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
             }
             break;
         }
+        case 4: // match phase sync on channel 4
+        {
+            if (event.packet->dataLength > 0 && event.packet->dataLength % sizeof(PacketMatchPhase) == 0)
+            {
+                PacketMatchPhase packetData;
+                memcpy(&packetData, event.packet->data, event.packet->dataLength);
+
+                matchPhase->updateServerMsg(packetData.code);
+            }
+        }
         }
         // 4. Destroy the packet when we're done with it.
         enet_packet_destroy(event.packet);
@@ -239,6 +253,9 @@ void PlayState::update(Client& client)	// updating internal state of client
 {
     animationSystem.PlayerAnim();
     uiSystem.displayHP();
+    playerSystem.handleHP();
+
+    matchPhase->updateCountdownTimer(); // yes, this is really just for one timer
 }
 
 void PlayState::render(Client& client)
@@ -248,20 +265,31 @@ void PlayState::render(Client& client)
 
 	SDL_RenderCopy(renderer, client.assets->GetTexture("gameBackground"), NULL, NULL);	// for background
 	renderSystem.render(renderer);
+    renderSystem.renderText(renderer);
 
 	SDL_RenderPresent(renderer);
 }
 
 void PlayState::onExit(Client& client)
 {
+    enet_peer_disconnect(client.getServerPeer(), 0);
+    enet_peer_reset(client.getServerPeer());
+
 	delete map;
+    delete matchPhase;
+       
+    // idk if this is necessary, but here it is
+    map = nullptr;
+    matchPhase = nullptr;
 }
 
 void PlayState::initUI(Client& client)
 {
     Entity UIHealthBorder = scene.CreateUIHealthBorder({ 0,0 }, { client.assets->GetTexture("healthBorder"), {0,0,224,32}, {0,0,224,32} });
     Entity UIHealthBar = scene.CreateUIHealthMeter({ 0,0 }, { client.assets->GetTexture("healthMeter"), {0,0,224,32}, {0,0,224,32} });
+    Entity serverMsg = scene.CreateUITextField({ 592, 8 }, "Waiting for server", client.assets->GetFont("KennyFuture_12"));
 
     scene.AddUIElement("HealthBorder", UIHealthBorder);
     scene.AddUIElement("HealthBar", UIHealthBar);
+    scene.AddUIElement("ServerMsg", serverMsg);
 }
