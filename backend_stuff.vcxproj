@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="AstroEngine\Src\AssetManager.cpp" />
     <ClCompile Include="AstroEngine\Src\Client.cpp" />
+    <ClCompile Include="AstroEngine\Src\ClientData.cpp" />
     <ClCompile Include="AstroEngine\Src\Collision.cpp" />
     <ClCompile Include="AstroEngine\Src\GameStates\ClientStates\PlayState.cpp" />
     <ClCompile Include="AstroEngine\Src\GameStates\ClientStates\TitleState.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="enet-1.3.18\win32.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AstroEngine\Src\ClientData.h" />
     <ClInclude Include="AstroEngine\Src\AssetManager.h" />
     <ClInclude Include="AstroEngine\Src\Client.h" />
     <ClInclude Include="AstroEngine\Src\Collision.h" />
@@ -180,6 +182,8 @@
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h" />
     <ClInclude Include="AstroEngine\Src\ECS\EntityManager.h" />
     <ClInclude Include="AstroEngine\Src\ECS\InputControllerComponent.h" />
+    <ClInclude Include="AstroEngine\Src\GamePhases\Client\MatchPhase.h" />
+    <ClInclude Include="AstroEngine\Src\GamePhases\Server\MatchPhase_S.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\ClientState.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\PlayState.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\TitleState.h" />
@@ -196,6 +200,7 @@
     <ClInclude Include="AstroEngine\Src\Systems\CollisionSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\EntityCleanSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\MovementSystem.h" />
+    <ClInclude Include="AstroEngine\Src\Systems\PlayerSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\RenderSystem.h" />
     <ClInclude Include="AstroEngine\Src\Systems\Systems.h" />
     <ClInclude Include="AstroEngine\Src\Systems\UISystem.h" />

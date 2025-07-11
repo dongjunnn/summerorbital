@@ -5,6 +5,7 @@
 #include <map>   
 #include "../../Map.h"
 #include "../../ECS/ECS.h" 
+#include "../../GamePhases/Client/MatchPhase.h"
 #include <unordered_map>
 
 class Map;
@@ -26,6 +27,8 @@ public:
 	
 private:
 	Map* map;
+	MatchPhase* matchPhase;
+
 	std::string givenAddress;
 
 	std::unordered_map<std::uint32_t, Entity> serverToClientEntityMap; // to match server id to entity of client i think

@@ -45,3 +45,7 @@ struct PacketProjectileCreated {
 struct PacketProjectileDestroyed {
     uint32_t entityID;
 };
+
+struct PacketMatchPhase {
+    uint8_t code;
+};

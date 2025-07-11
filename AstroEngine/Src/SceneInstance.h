@@ -37,7 +37,7 @@ public:
 
 	Entity CreateUIHealthMeter(const Vector2D position, const SpriteComponent sprite);
 
-	Entity CreateUITextField(const Vector2D position, const SpriteComponent sprite);
+	Entity CreateUITextField(const Vector2D position, const std::string text, TTF_Font* font);
 
 	void AddUIElement(std::string id, Entity entity);
 

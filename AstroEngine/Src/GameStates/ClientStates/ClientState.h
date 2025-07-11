@@ -25,12 +25,14 @@ protected:
 	RenderSystem renderSystem;
 	AnimationSystem animationSystem;
 	UISystem uiSystem;
+	PlayerSystem playerSystem;
 
 	ClientState()
 		: clickableSystem(scene), 
 		  renderSystem(scene), 
 		  animationSystem(scene),
-		  uiSystem(scene)
+		  uiSystem(scene),
+		  playerSystem(scene)
 	{ }
 
 };

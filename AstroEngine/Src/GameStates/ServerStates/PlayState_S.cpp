@@ -9,6 +9,7 @@ void PlayState_S::onEnter(Server& server)
 	map = new Map("terrain", 1, 32);
 	map->LoadMap("assets/map.map", scene, 25, 20);
 
+    matchPhase = new MatchPhase_S(scene, clientData);
 }
 
 void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
@@ -20,12 +21,13 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         std::cout << "[SERVER] A new client connected from "
             << event.peer->address.host << ":" << event.peer->address.port << std::endl;
 
-        // realise this implementation loses global transform scaling, can do somthing about that if need be
+        // creating new player serverside
         Entity newPlayer = scene.CreatePlayer({ Vector2D{ 400,320} }, { Vector2D {32,32} });
 
         event.peer->data = (void*)((uintptr_t)newPlayer);     // this could be a problem if a player dies
         std::cout << "[SERVER] Created player with ID " << newPlayer << " for the new client." << std::endl;
 
+        // packaging new player data 
         PlayerState state;
         state.entityID = newPlayer;
         state.x = scene.GetEntityData<TransformComponent>(newPlayer).position.x;   // rip 
@@ -39,8 +41,15 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             sizeof(PlayerState),
             ENET_PACKET_FLAG_RELIABLE);
 
-        // Send the packet to all connected clients on channel 0.
+        // Sending packet to new client on channel 4
         enet_peer_send(event.peer, 4, packet);
+
+        // Updating player reference (who is player #1 etc) 
+        clientData.assignPlayer(newPlayer);
+        
+        // updating match phase
+        matchPhase->updatePlayerCount();
+
         break;
     }
 
@@ -50,10 +59,15 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
 
         PlayerInputPacket input;
         memcpy(&input, event.packet->data, sizeof(PlayerInputPacket));
+    
+        bool& isAlive = scene.GetEntityData<PlayerComponent>(playerID).isAlive;
 
-        handleUserMovementInput(playerID, input);
-        handleUserFiring(playerID, input, server);
-
+        if (isAlive)    // they can move and shoot only when they are alive
+        {
+            handleUserMovementInput(playerID, input);
+            handleUserFiring(playerID, input, server);
+        }
+   
         enet_packet_destroy(event.packet);
         break;
     }
@@ -66,6 +80,8 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             Entity playerID = (uintptr_t)event.peer->data;
             scene.DestroyEntity(playerID); // Remove the player entity from the ECS
             scene.AppendDeletionQueue(playerID); // Tell other clients it is destroyed
+            clientData.disassignPlayer(playerID);  // free up player reference (who is player #1 etc)
+            matchPhase->updatePlayerCount(); // let matchPhase know a player left
             std::cout << "[SERVER] Destroyed player with ID " << playerID << "." << std::endl;
         }
         break;
@@ -83,6 +99,13 @@ void PlayState_S::update(Server& server)
     // now clean systems return a list of what they delete, to make sending to client easier
     delProj = entityCleanSystem.cleanProjectiles();
     delMisc = entityCleanSystem.clearDeletionQueue();
+
+    // setting defeated players 
+    entityCleanSystem.handleDefeatedPlayers();   
+
+    // this is literally only for that one countdown timer
+    matchPhase->handleDefeatedPlayers();
+    matchPhase->updateCountdownTimer();
 }
 
 void PlayState_S::broadcastStates(Server& server)
@@ -157,6 +180,14 @@ void PlayState_S::broadcastStates(Server& server)
         // send the packet to all connected clients on channel 3
         std::cout << "sending deletion packet" << std::endl;
         enet_host_broadcast(server.getServerHost(), 3, packet);
+    }
+
+    // match phase communication on channel 4
+    bool& broadcastNow = matchPhase->getBroadcast();
+    if (broadcastNow)
+    { 
+        matchPhase->broadcastPhase(server.getServerHost());
+        broadcastNow = false;
     }
 
 }

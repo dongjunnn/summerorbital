@@ -145,14 +145,14 @@ Entity SceneInstance::CreateUIHealthMeter(const Vector2D position, const SpriteC
     return uiMeter;
 }
 
-Entity SceneInstance::CreateUITextField(const Vector2D position, const SpriteComponent sprite)
+Entity SceneInstance::CreateUITextField(const Vector2D position, std::string text, TTF_Font* font)
 {
     Entity textField = CreateEntity();
     AddComponent<TransformComponent>(textField);
-    AddComponent<SpriteComponent>(textField);
+    AddComponent<LabelComponent>(textField);
 
     SetEntityData<TransformComponent>(textField, { position });
-    SetEntityData<SpriteComponent>(textField, sprite);
+    SetEntityData<LabelComponent>(textField, LabelComponent(text, font));
 
     ComponentBitSet newSig = GetEntitySignature(textField);		// updating views
     UpdateViews(textField, ComponentBitSet{}, newSig);

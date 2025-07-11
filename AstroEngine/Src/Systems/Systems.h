@@ -6,3 +6,4 @@
 #include "EntityCleanSystem.h"
 #include "AnimationSystem.h"
 #include "UISystem.h"		// ui beam system
+#include "PlayerSystem.h"

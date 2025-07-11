@@ -23,6 +23,8 @@ void RenderSystem::render(SDL_Renderer* renderer)
 			s.dstRect.x = t.position.x;
 			s.dstRect.y = t.position.y;
 
+			SDL_SetTextureAlphaMod(s.texture, s.alpha);		// for opacity
+
 			SDL_RenderCopyEx(renderer, s.texture, &s.srcRect, &s.dstRect, ((double) rot.angle) * (180/3.1415), NULL, SDL_FLIP_NONE);
 			continue;
 		}
@@ -30,6 +32,8 @@ void RenderSystem::render(SDL_Renderer* renderer)
 		{
 			s.dstRect.x = t.position.x;
 			s.dstRect.y = t.position.y;
+
+			SDL_SetTextureAlphaMod(s.texture, s.alpha);		// for opacity
 
 			SDL_RenderCopy(renderer, s.texture, &s.srcRect, &s.dstRect);
 		}
@@ -47,7 +51,7 @@ void RenderSystem::renderText(SDL_Renderer* renderer)
 		TTF_Font* font = label.font;
 		SDL_Color colour = label.colour;
 
-		auto& spr = scene.GetEntityData<SpriteComponent>(e).dstRect;
+		auto& spr = scene.GetEntityData<TransformComponent>(e).position;
 
 		if (label.toUpdate)		// if there is a change, re render text
 		{

@@ -1,5 +1,7 @@
 #pragma once
 #include "ServerState.h"
+#include "../../ClientData.h"
+#include "../../GamePhases/Server/MatchPhase_S.h"
 #include "../../Map.h"
 
 
@@ -17,7 +19,10 @@ public:
 
 private:
 	Map* map;
+	MatchPhase_S* matchPhase;
+	ClientData clientData;
+
 	std::vector<Entity> delProj;
-	std::vector<Entity> delPlyr;
+	std::vector<Entity> defPlyr;
 	std::vector<Entity> delMisc;
 };
