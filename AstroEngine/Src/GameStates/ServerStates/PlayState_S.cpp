@@ -214,32 +214,45 @@ void PlayState_S::handleUserMovementInput(Entity playerID, const PlayerInputPack
 void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& input, Server& server)
 {
     if (input.fireButtonPressed) {
-        // projectile creation on channel 2
-
-        TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
-        RotationComponent& playerRotation = scene.GetEntityData<RotationComponent>(playerID);
-
-        float projectileSpeed = 5.0f;
-        float spawnDistance = 40.0f;  // How far from the player's center the projectile should spawn
-
-        float shootingAngle = playerRotation.angle - (M_PI / 2.0f);
-
-        Vector2D projectileVelocity = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(projectileSpeed);
-
-        Vector2D spawnOffset = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(spawnDistance);
-        Vector2D spawnPosition = playerTransform.position + spawnOffset;
+        PlayerComponent& playerData = scene.GetEntityData<PlayerComponent>(playerID);
         
-        Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 32, 32 });
+        // NOTE: In milliseconds
+        const float fireRate = 500.0f; // 0.5 seconds CAN BE CHANGED TODO
+        
+        // Get the current time
+        float currentTime = SDL_GetTicks();
+        
+        // Check if enough time has passed since the last shot
+        if (currentTime > playerData.lastFireTime + fireRate)
+        {
+            
+            playerData.lastFireTime = currentTime;
 
-        PacketProjectileCreated projectilePacket;
-        projectilePacket.entityID = newProjectileID;
-        projectilePacket.position = spawnPosition;
-        projectilePacket.velocity = projectileVelocity;
+            TransformComponent& playerTransform = scene.GetEntityData<TransformComponent>(playerID);
+            RotationComponent& playerRotation = scene.GetEntityData<RotationComponent>(playerID);
+            
+            float projectileSpeed = 5.0f;
+            float spawnDistance = 40.0f;
+            
+            float shootingAngle = playerRotation.angle - (M_PI / 2.0f);
 
-        ENetPacket* packet = enet_packet_create(&projectilePacket,
-            sizeof(PacketProjectileCreated),
-            ENET_PACKET_FLAG_RELIABLE);
+            Vector2D projectileVelocity = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(projectileSpeed);
 
-        enet_host_broadcast(server.getServerHost(), 2, packet);
+            Vector2D spawnOffset = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(spawnDistance);
+            Vector2D spawnPosition = playerTransform.position + spawnOffset;
+            
+            Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 32, 32 });
+
+            PacketProjectileCreated projectilePacket;
+            projectilePacket.entityID = newProjectileID;
+            projectilePacket.position = spawnPosition;
+            projectilePacket.velocity = projectileVelocity;
+
+            ENetPacket* packet = enet_packet_create(&projectilePacket,
+                sizeof(PacketProjectileCreated),
+                ENET_PACKET_FLAG_RELIABLE);
+
+            enet_host_broadcast(server.getServerHost(), 2, packet);
+        }
     }
 }
