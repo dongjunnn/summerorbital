@@ -195,30 +195,24 @@ private:
 
 	void resetPlayingField()
 	{
+		scene.events()->broadcast<CullProjectilesEvent>();
+
 		Entity p1 = clientData.getPlayerIDbyRef(1);
 		Entity p2 = clientData.getPlayerIDbyRef(2);
 
-		Vector2D& p1_pos = scene.GetEntityData<TransformComponent>(p1).position;
-		Vector2D& p2_pos = scene.GetEntityData<TransformComponent>(p2).position;
+		scene.GetEntityData<TransformComponent>(p1).position = Vector2D(192.0f, 576.0f);
+		scene.GetEntityData<TransformComponent>(p2).position = Vector2D(592.0f, 128.0f);
 
-		p1_pos.x = 192; p1_pos.y = 576;
-		p2_pos.x = 592; p2_pos.y = 128;
+		scene.GetEntityData<VelocityComponent>(p1).velocity = Vector2D(0.0f, 0.0f);
+		scene.GetEntityData<VelocityComponent>(p2).velocity = Vector2D(0.0f, 0.0f);
 
-		int& p1_hp = scene.GetEntityData<HealthComponent>(p1).hp;
-		int& p2_hp = scene.GetEntityData<HealthComponent>(p2).hp;
+		scene.GetEntityData<HealthComponent>(p1).hp = 100;
+		scene.GetEntityData<HealthComponent>(p2).hp = 100;
 
-		p1_hp = 100;
-		p2_hp = 100;
+		scene.GetEntityData<PlayerComponent>(p1).isAlive = true;
+		scene.GetEntityData<PlayerComponent>(p2).isAlive = true;
 
-		bool& p1_isAlive = scene.GetEntityData<PlayerComponent>(p1).isAlive;
-		bool& p2_isAlive = scene.GetEntityData<PlayerComponent>(p2).isAlive;
-
-		p1_isAlive = true;
-		p2_isAlive = true;
-
-		float& p1_angle = scene.GetEntityData<RotationComponent>(p1).angle;
-		float& p2_angle = scene.GetEntityData<RotationComponent>(p1).angle;
-
-		bool startMatchOver = false;
+		scene.GetEntityData<RotationComponent>(p1).angle = 0;
+		scene.GetEntityData<RotationComponent>(p2).angle = 180;
 	}
 };

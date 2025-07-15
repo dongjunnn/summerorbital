@@ -69,6 +69,20 @@ public:
 				}
 			}
 		}
+		// projectile-tile; is this too inefficient?
+		for (Entity proj : projs)
+		{
+			SDL_Rect& projcol = scene.GetEntityData<ColliderComponent>(proj).collider;
+			for (Entity tile : tiles)
+			{
+				SDL_Rect& tcol = scene.GetEntityData<ColliderComponent>(tile).collider;
+				if (Collision::AABB(projcol, tcol))
+				{
+					CollisionEvents.push_back({ proj, tile, CollisionType::ProjectileTile });
+					break;
+				}
+			}
+		}
 	}
 
 	void resolveCollision()
@@ -125,6 +139,14 @@ public:
 				if (hp <= 0) { scene.events()->broadcast<PlayerDiedEvent>(colEvent.a); }
 				
 				scene.AppendDeletionQueue(colEvent.b);
+				break;
+			}
+			case CollisionType::ProjectileTile:
+			{
+				// projectile tile events are (projectile, tile, event)
+	
+				scene.AppendDeletionQueue(colEvent.a);
+				// std::cout << "Projectile " << colEvent.a << " hit tile " << colEvent.b << std::endl;
 				break;
 			}
 			default:

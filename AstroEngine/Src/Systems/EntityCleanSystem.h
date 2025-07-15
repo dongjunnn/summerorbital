@@ -7,6 +7,11 @@ class EntityCleanSystem
 public:
 	EntityCleanSystem(SceneInstance& sceneRef) : scene(sceneRef) {}
 
+	void hookEvents()
+	{
+		scene.events()->connect<CullProjectilesEvent, EntityCleanSystem>(&EntityCleanSystem::deleteAllProjectilesNow, this);
+	}
+
 	// cleans projectiles and returns a vector of deletions
 	std::vector<Entity> cleanProjectiles()
 	{
@@ -66,12 +71,30 @@ public:
 
 		for (Entity player : players)
 		{
-			int& hp = scene.GetEntityData<HealthComponent>(player).hp;
+			int& hp = scene.GetEntityData<HealthComponent>(player).hp;	// and now too lazy to add it
 			if (hp <= 0)
 			{
 				PlayerComponent& plyr = scene.GetEntityData<PlayerComponent>(player);
 				plyr.isAlive = false;
 			}
+		}
+	}
+
+	void deleteAllProjectilesNow(CullProjectilesEvent& event)
+	{
+		toDelete.clear();
+
+		auto& projectiles = scene.GetView<ProjectileComponent>();
+
+		for (Entity projectile : projectiles)
+		{
+			toDelete.push_back(projectile);
+		}
+		for (Entity e : toDelete)
+		{
+			scene.DestroyEntity(e);
+			scene.AppendDeletionQueue(e);
+			std::cout << "Culling Projectile  " << e << std::endl;
 		}
 	}
 

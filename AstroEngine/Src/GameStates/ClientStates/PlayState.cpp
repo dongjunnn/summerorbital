@@ -245,6 +245,8 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
     case ENET_EVENT_TYPE_DISCONNECT:
         std::cout << "[CLIENT] Disconnected from server." << std::endl;
         // Here you could set a flag to take the player back to a main menu
+        // and now we have
+        client.changeState(new TitleState());
         break;
     }
 }

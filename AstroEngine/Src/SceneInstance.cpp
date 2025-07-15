@@ -1,4 +1,5 @@
 #include "SceneInstance.h"
+#include <algorithm>
 
 // Client-side implementation (generates a new local ID)
 Entity SceneInstance::CreateProjectile(const Vector2D position, const Vector2D velocity, const SpriteComponent sprite)

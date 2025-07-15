@@ -36,3 +36,9 @@ public:
 	
 	Entity id;
 };
+
+class CullProjectilesEvent : public Event
+{
+public:
+	CullProjectilesEvent() {}
+};

@@ -10,6 +10,7 @@ void PlayState_S::onEnter(Server& server)
 	map->LoadMap("assets/map.map", scene, 25, 20);
 
     scene.hookEventSystem(server.getEvents());  // event system is not mandatory
+    entityCleanSystem.hookEvents(); // maybe better system one day
     matchPhase = new MatchPhase_S(scene, clientData, server.getEvents());
 }
 
