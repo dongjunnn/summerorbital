@@ -182,6 +182,9 @@
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h" />
     <ClInclude Include="AstroEngine\Src\ECS\EntityManager.h" />
     <ClInclude Include="AstroEngine\Src\ECS\InputControllerComponent.h" />
+    <ClInclude Include="AstroEngine\Src\Events\CallbackContainer.h" />
+    <ClInclude Include="AstroEngine\Src\Events\EventManager.h" />
+    <ClInclude Include="AstroEngine\Src\Events\Events.h" />
     <ClInclude Include="AstroEngine\Src\GamePhases\Client\MatchPhase.h" />
     <ClInclude Include="AstroEngine\Src\GamePhases\Server\MatchPhase_S.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\ClientState.h" />

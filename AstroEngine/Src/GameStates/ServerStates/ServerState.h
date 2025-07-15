@@ -2,9 +2,11 @@
 #include "../../SceneInstance.h"
 #include "../../Systems/Systems.h"
 #include "../../Packet.h" 
+#include "../../Events/EventManager.h"
 #include <enet/enet.h>
 
 class Server;
+class EventManager;
 
 // takes in a reference to server so it can use server info if need be
 class ServerState

@@ -1,4 +1,5 @@
 #pragma once
+#include "../../Events/EventManager.h"
 #include "../../SceneInstance.h"
 #include "../../Components/Components.h"
 #include "../../ClientData.h"
@@ -17,38 +18,60 @@ enum class Phase
 class MatchPhase_S
 {
 public:
-	MatchPhase_S(SceneInstance& sceneRef, ClientData& clientData) 
-		: scene(sceneRef), clientData(clientData) {}
+	MatchPhase_S(SceneInstance& sceneRef, ClientData& clientData, EventManager* eventManager) 
+		: scene(sceneRef), clientData(clientData), eventManager(eventManager) 
+	{
+		// guess we can connect it here, didn't really think about the integration part with the events lol
+		eventManager->connect<PlayerDiedEvent, MatchPhase_S>(&MatchPhase_S::onPlayerDefeated, this);
+		eventManager->connect<PlayerJoinedEvent, MatchPhase_S>(&MatchPhase_S::onPlayerConnect, this);
+		eventManager->connect<PlayerDisconnectEvent, MatchPhase_S>(&MatchPhase_S::onPlayerDisconnect, this);
+	}
 
 	~MatchPhase_S() {}
 
-	void updatePlayerCount()	// only call this when players leave or join
+	void changePhase(Phase gamePhase)
 	{
-		playerCount = scene.GetView<PlayerComponent>().size();
+		currentPhase = gamePhase;
+		broadcast = true;
+	}
+
+	void onPlayerConnect(PlayerJoinedEvent& event)	// only call this when players join
+	{
+		playerCount += 1;
+
+		switch (playerCount)
+		{
+		case 1:
+			changePhase(Phase::Waiting);
+			break;
+		case 2:
+			changePhase(Phase::Countdown);
+
+			startCountdown();
+			std::cout << "[SERVER] All players connected, game starting in 3 sec" << std::endl;
+			break;
+		}
+	}
+
+	void onPlayerDisconnect(PlayerDisconnectEvent& event)	// only call this when players leave or join
+	{
+		playerCount -= 1;
 
 		switch (playerCount)
 		{
 		case 0:
-			currentPhase = Phase::Empty;
+			changePhase(Phase::Empty);
 			break;
 		case 1:
-			currentPhase = Phase::Waiting;
-			broadcast = true;
-			break;
-		case 2:
-			currentPhase = Phase::Countdown;
-			broadcast = true;
-
-			start = SDL_GetTicks();
-			countdownStarted = true;
-			std::cout << "[SERVER] All players connected, game starting in 3 sec" << std::endl;
+			changePhase(Phase::Waiting);
 			break;
 		}
 	}
 
 	void updateCountdownTimer()
 	{
-		if (countdownStarted)
+		// lazy
+		if (countdownStarted && currentPhase == Phase::Countdown)
 		{	
 			uint32_t elapsed = SDL_GetTicks() - start;
 			if (elapsed > timerDuration)
@@ -56,33 +79,33 @@ public:
 				countdownStarted = false;
 
 				std::cout << "[SERVER] Starting match" << std::endl;
-				resetPlayers();
+				resetPlayingField();
 
-				currentPhase = Phase::Match;
-				broadcast = true;
+				changePhase(Phase::Match);
+			}
+		}
+		else if (countdownStarted && currentPhase == Phase::MatchOver)
+		{
+			uint32_t elapsed = SDL_GetTicks() - start;
+			if (elapsed > timerDuration)
+			{
+				countdownStarted = false;
+
+				std::cout << "[SERVER] Restarting countdown" << std::endl;
+
+				changePhase(Phase::Countdown);
+				startCountdown(); // very lazy
 			}
 		}
 	}
 
-	void handleDefeatedPlayers()	// this is only not so bad, because we have only 2 players
-	{								// and caching is fast. lookups are still slow though :(
-		auto& players = scene.GetView<PlayerComponent>();	// this isnt in a system because it only reads from the ecs
+	// connected to the player died event
+	void onPlayerDefeated(PlayerDiedEvent& event)	
+	{								
+		defeated = clientData.getPlayerRefbyID(event.id);
 
-		for (Entity p : players)	// but still, checking this every tick is terrible
-		{							
-			bool& isAlive = scene.GetEntityData<PlayerComponent>(p).isAlive;
-			if (!isAlive)
-			{
-				if (!startMatchOver)
-				{
-					defeated = clientData.getPlayerRefbyID(p);
-					startMatchOver = true;
-					
-					currentPhase = Phase::MatchOver;	// this feels like coding in redstone
-					broadcast = true;
-				}
-			}
-		}
+		changePhase(Phase::MatchOver);
+		startCountdown();
 	}
 	
 	void broadcastPhase(ENetHost* serverHost)
@@ -90,6 +113,10 @@ public:
 		uint8_t code = 0;
 		switch (currentPhase)
 		{
+		case Phase::Empty:
+		{
+			return;
+		}
 		case Phase::Waiting:
 		{
 			code = 1;
@@ -142,7 +169,31 @@ public:
 		return currentPhase;
 	}
 
-	void resetPlayers()
+private:
+	SceneInstance& scene;
+	ClientData& clientData;
+	EventManager* eventManager = nullptr;
+
+	Phase currentPhase = Phase::Empty;
+	int playerCount = 0;
+	int defeated = 0;
+
+	bool broadcast = false;
+	bool restartSequenceStarted = false;
+
+	// countdown timer stuff
+	u_int timerDuration = 3000;
+
+	bool countdownStarted = false;
+	uint32_t start;
+
+	void startCountdown()
+	{
+		start = SDL_GetTicks();
+		countdownStarted = true;
+	}
+
+	void resetPlayingField()
 	{
 		Entity p1 = clientData.getPlayerIDbyRef(1);
 		Entity p2 = clientData.getPlayerIDbyRef(2);
@@ -161,7 +212,7 @@ public:
 
 		bool& p1_isAlive = scene.GetEntityData<PlayerComponent>(p1).isAlive;
 		bool& p2_isAlive = scene.GetEntityData<PlayerComponent>(p2).isAlive;
-		
+
 		p1_isAlive = true;
 		p2_isAlive = true;
 
@@ -170,21 +221,4 @@ public:
 
 		bool startMatchOver = false;
 	}
-
-private:
-	SceneInstance& scene;
-	ClientData& clientData;
-
-	Phase currentPhase = Phase::Empty;
-	int playerCount = 0;
-	int defeated = 0;
-
-	bool broadcast = false;
-	bool startMatchOver = false;
-
-	// countdown timer stuff
-	u_int timerDuration = 3000;
-
-	bool countdownStarted = false;
-	uint32_t start;
 };

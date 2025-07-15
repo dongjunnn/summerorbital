@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "Events/EventManager.h"
 
 
 class SceneInstance : public Scene
@@ -22,6 +23,13 @@ public:
 	}
 
 	virtual ~SceneInstance() = default;
+
+	// Event integration (optional)
+	void hookEventSystem(EventManager* eventMgr) { eventManager = eventMgr; }
+
+	EventManager* events() {
+		if (eventManager == nullptr) { std::cout << "[SERVER WARN] Event system not hooked onto scene" << std::endl; }
+		return eventManager; }
 	
 	// creation helpers
 	Entity CreateProjectile(const Vector2D position, const Vector2D velocity, const SpriteComponent sprite);
@@ -57,4 +65,5 @@ public:
 private:
 	UIElementMap uiElementMap;
 	std::vector<Entity> deletionQueue;
+	EventManager* eventManager = nullptr;
 };

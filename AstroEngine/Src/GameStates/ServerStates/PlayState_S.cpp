@@ -9,7 +9,8 @@ void PlayState_S::onEnter(Server& server)
 	map = new Map("terrain", 1, 32);
 	map->LoadMap("assets/map.map", scene, 25, 20);
 
-    matchPhase = new MatchPhase_S(scene, clientData);
+    scene.hookEventSystem(server.getEvents());  // event system is not mandatory
+    matchPhase = new MatchPhase_S(scene, clientData, server.getEvents());
 }
 
 void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
@@ -45,10 +46,8 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         enet_peer_send(event.peer, 4, packet);
 
         // Updating player reference (who is player #1 etc) 
-        clientData.assignPlayer(newPlayer);
-        
-        // updating match phase
-        matchPhase->updatePlayerCount();
+        clientData.assignPlayer(newPlayer); // TODO connect client data to events
+        server.getEvents()->broadcast<PlayerJoinedEvent>(newPlayer);
 
         break;
     }
@@ -81,7 +80,7 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
             scene.DestroyEntity(playerID); // Remove the player entity from the ECS
             scene.AppendDeletionQueue(playerID); // Tell other clients it is destroyed
             clientData.disassignPlayer(playerID);  // free up player reference (who is player #1 etc)
-            matchPhase->updatePlayerCount(); // let matchPhase know a player left
+            scene.events()->broadcast<PlayerDisconnectEvent>(playerID);
             std::cout << "[SERVER] Destroyed player with ID " << playerID << "." << std::endl;
         }
         break;
@@ -91,6 +90,9 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
 
 void PlayState_S::update(Server& server)
 {
+    // processing game events
+    server.getEvents()->processEvents();
+
     movementSystem.update();		// movement system updates the position of all entities with a transform and velocity
     collisionSystem.updateColliderPositions();
     collisionSystem.checkCollision();
@@ -104,7 +106,6 @@ void PlayState_S::update(Server& server)
     entityCleanSystem.handleDefeatedPlayers();   
 
     // this is literally only for that one countdown timer
-    matchPhase->handleDefeatedPlayers();
     matchPhase->updateCountdownTimer();
 }
 

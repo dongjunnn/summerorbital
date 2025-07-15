@@ -20,6 +20,10 @@ Server::~Server()
     if (serverHost != nullptr) {
         enet_host_destroy(serverHost);
     }
+
+    if (eventManager) {
+        delete eventManager;
+    }
     // We can call enet_deinitialize() here if the server is the only part using ENet
 }
 
@@ -43,6 +47,12 @@ bool Server::init()
     }
 
     std::cout << "[SERVER] Started successfully on port 1234." << std::endl;
+
+    // setting up our event manager
+    eventManager = new EventManager();
+    if (eventManager == nullptr) {
+        std::cerr << "Event Manager setup failure" << std::endl;
+    }
 
     // Now, set up the game world
     setupGame();

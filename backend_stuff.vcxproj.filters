@@ -467,6 +467,15 @@
     <ClInclude Include="AstroEngine\Src\Systems\PlayerSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Events\Events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Events\CallbackContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AstroEngine\Src\Events\EventManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="enet-1.3.18\docs\html\search\all_0.html" />
