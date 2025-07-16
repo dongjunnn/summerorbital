@@ -92,9 +92,6 @@
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AstroEngine\Src\ECS\InputControllerComponent.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AstroEngine\Src\AssetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -429,9 +426,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\GameStates\ServerStates\PlayState_S.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AstroEngine\Src\GameStates\Shared\GamePhase.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AstroEngine\Src\GameStates\ServerStates\ServerState.h">

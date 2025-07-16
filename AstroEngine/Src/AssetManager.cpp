@@ -1,16 +1,10 @@
 #include "AssetManager.h"
 
-AssetManager::AssetManager()
+AssetManager::AssetManager() 
 {}
 
 AssetManager::~AssetManager()
 {}
-
-void AssetManager::CreateProjectile(Vector2D pos, Vector2D vel, int speed, std::string id)
-{
-	// TODO
-	
-}
 
 void AssetManager::AddTexture(std::string id, const char* path, SDL_Renderer* renderer)	// now that renderer is not static
 {

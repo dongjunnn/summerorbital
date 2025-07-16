@@ -91,8 +91,11 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
         isRunning = true;
     }
 
-    if ((IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
-        std::cout << "SDL_image Init Pass: " << std::endl;
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        std::cout << "[ERROR] SDL_image Init Failed, exiting " << "\n";
+        std::cout << "[ERROR] " << IMG_GetError() << std::endl;
+        isRunning = false;
+        return;
     }
 
     if (!renderer) {
@@ -118,6 +121,7 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
     assets->AddTexture("ship", "assets/shipSprite.png", renderer);
     assets->AddTexture("addressField", "assets/AddressField.png", renderer);
     assets->AddTexture("connectionFailedMsg", "assets/ConnectionFailed.png", renderer);
+    assets->AddTexture("shipRed", "assets/shipRed.png", renderer);
 
     assets->AddFont("KennyFuture_12", "assets/Kenney Future.ttf", renderer, 12);
     assets->AddFont("KennyFuture_48", "assets/Kenney Future.ttf", renderer, 48);

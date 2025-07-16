@@ -39,12 +39,14 @@ void PlayState::onEnter(Client& client)
             memcpy(&state, event.packet->data, sizeof(state));
 
             SpriteComponent playerSprite{
-                    client.assets->GetTexture("ship"),
+                    getShipColour(client, state.colour),
                     {0,0,96,96},
                     { (int)state.x,  (int)state.y, 32, 32 }
             };
             Entity clientID = scene.CreatePlayer({ state.x, state.y }, playerSprite);
+
             std::cout << "local player created" << std::endl;
+
             scene.AddUIElement("thisPlayer", clientID);
             serverToClientEntityMap[state.entityID] = clientID;
 
@@ -158,8 +160,14 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                     }
                     else {
                         // This is a new player we haven't seen. Create it and store the mapping.
+
+                        int colour; 
+                        if (scene.GetEntityData<SpriteComponent>(scene.GetUIElement("thisPlayer")).texture ==
+                            client.assets->GetTexture("ship"))
+                        { colour = 2; } else { colour = 1; }
+
                         SpriteComponent playerSprite{
-                            client.assets->GetTexture("ship"),
+                            getShipColour(client, colour),
                             {0,0,96,96},
                             {(int)serverState.x, (int)serverState.y, 32, 32}
                         };
@@ -188,8 +196,7 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                     }
                     else {
                         // This is a new projectile we haven't seen. Create it and store the mapping.
-
-                        SpriteComponent projSprite{
+                           SpriteComponent projSprite {
                             client.assets->GetTexture("orb"),
                             {0,0,32,32},
                             {(int)serverState.x, (int)serverState.y, 32, 32}
@@ -294,4 +301,21 @@ void PlayState::initUI(Client& client)
     scene.AddUIElement("HealthBorder", UIHealthBorder);
     scene.AddUIElement("HealthBar", UIHealthBar);
     scene.AddUIElement("ServerMsg", serverMsg);
+}
+
+SDL_Texture* PlayState::getShipColour(Client& client, int colour)
+{
+    switch (colour)
+    {
+    case 1:
+        return client.assets->GetTexture("ship"); // original blue one
+        break;
+    case 2:
+        return client.assets->GetTexture("shipRed");
+        break;
+    default:
+        std::cerr << "[CLIENT WARN] Bad colour data received" << std::endl;
+        return nullptr;
+        break;
+    }
 }

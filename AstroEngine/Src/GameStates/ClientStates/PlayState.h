@@ -33,5 +33,5 @@ private:
 
 	std::unordered_map<std::uint32_t, Entity> serverToClientEntityMap; // to match server id to entity of client i think
 
-
+	SDL_Texture* getShipColour(Client& client, int colour);
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <string>
+#include <filesystem>
 #include "TextureManager.h"
 #include "Vector2D.h"
 #include "ECS/ECS.h"
@@ -10,9 +11,6 @@ class AssetManager
 public:
 	AssetManager();
 	~AssetManager();
-
-	// game objects
-	void CreateProjectile(Vector2D pos, Vector2D vel, int speed, std::string id);
 
 	// texture management
 	void AddTexture(std::string id, const char* path, SDL_Renderer* renderer);

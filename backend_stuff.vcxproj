@@ -74,6 +74,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>.</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)</OutDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -128,10 +131,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\David\Desktop\the commit vomit\summerorbital\enet-1.3.18\include;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2_ttf-2.24.0\include;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2_image-2.0.1\include;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\David\Desktop\the commit vomit\summerorbital\enet-1.3.18\lib;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2_ttf-2.24.0\lib\x64;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2_image-2.0.1\lib\x64;C:\Users\David\Desktop\the commit vomit\summerorbital\SDL2\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;SDL2_image.lib;SDL2_ttf.lib;enet64.lib;ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -181,7 +188,6 @@
     <ClInclude Include="AstroEngine\Src\ECS\ComponentManager.h" />
     <ClInclude Include="AstroEngine\Src\ECS\ECS.h" />
     <ClInclude Include="AstroEngine\Src\ECS\EntityManager.h" />
-    <ClInclude Include="AstroEngine\Src\ECS\InputControllerComponent.h" />
     <ClInclude Include="AstroEngine\Src\Events\CallbackContainer.h" />
     <ClInclude Include="AstroEngine\Src\Events\EventManager.h" />
     <ClInclude Include="AstroEngine\Src\Events\Events.h" />
@@ -192,7 +198,6 @@
     <ClInclude Include="AstroEngine\Src\GameStates\ClientStates\TitleState.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ServerStates\PlayState_S.h" />
     <ClInclude Include="AstroEngine\Src\GameStates\ServerStates\ServerState.h" />
-    <ClInclude Include="AstroEngine\Src\GameStates\Shared\GamePhase.h" />
     <ClInclude Include="AstroEngine\Src\Map.h" />
     <ClInclude Include="AstroEngine\Src\Packet.h" />
     <ClInclude Include="AstroEngine\Src\Scene.h" />

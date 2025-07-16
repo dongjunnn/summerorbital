@@ -4,6 +4,7 @@
 class ClientData
 {
 public:	// if we want, we can store player nicknames and stuff here ig, but i doubt we are going to
+	ClientData() {}
 
 	void assignPlayer(Entity id);
 	void disassignPlayer(Entity id);

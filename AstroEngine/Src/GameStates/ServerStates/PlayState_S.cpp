@@ -29,6 +29,10 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         event.peer->data = (void*)((uintptr_t)newPlayer);     // this could be a problem if a player dies
         std::cout << "[SERVER] Created player with ID " << newPlayer << " for the new client." << std::endl;
 
+        // Updating player reference (who is player #1 etc) 
+        clientData.assignPlayer(newPlayer); // TODO connect client data to events
+        server.getEvents()->broadcast<PlayerJoinedEvent>(newPlayer);
+
         // packaging new player data 
         PlayerState state;
         state.entityID = newPlayer;
@@ -37,7 +41,8 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         state.angle = scene.GetEntityData<RotationComponent>(newPlayer).angle;
 
         state.health = scene.GetEntityData<HealthComponent>(newPlayer).hp;
-        state.colour = 0;
+        state.colour = clientData.getPlayerRefbyID(newPlayer);
+        std::cout << state.colour << std::endl;
 
         ENetPacket* packet = enet_packet_create(&state,
             sizeof(PlayerState),
@@ -45,10 +50,6 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
 
         // Sending packet to new client on channel 4
         enet_peer_send(event.peer, 4, packet);
-
-        // Updating player reference (who is player #1 etc) 
-        clientData.assignPlayer(newPlayer); // TODO connect client data to events
-        server.getEvents()->broadcast<PlayerJoinedEvent>(newPlayer);
 
         break;
     }
@@ -209,7 +210,7 @@ void PlayState_S::handleUserMovementInput(Entity playerID, const PlayerInputPack
     Vector2D normalised = vel.getNormalised();
     Vector2D bias = Vector2D(0.0f, -1.0f).scale(accel);
     float magnitude = vel.magnitude();
-    float brake = 0.1f;
+    float brake = 0.22f;
     float rot_speed = 0.05f;     // in radians
 
     // if w is pressed and the increase in velocity is less than the difference between current and max velocities, add velocity
@@ -236,11 +237,14 @@ void PlayState_S::handleUserMovementInput(Entity playerID, const PlayerInputPack
         plyrAngle += rot_speed;
     }
 
-    if (!(input.up || input.down))
+    if (!(input.up))
     {
-        vel -= normalised.scale(VEL_DECAY);
-        if (std::abs(vel.x) < 0.000001) vel.x = 0;
-        if (std::abs(vel.y) < 0.000001) vel.y = 0;
+        Vector2D step = normalised.scale(VEL_DECAY);
+        float stepsize = step.magnitude();
+
+        vel -= step;
+        if (std::abs(vel.x) < stepsize) vel.x = 0;
+        if (std::abs(vel.y) < stepsize) vel.y = 0;
     }
 }
 
