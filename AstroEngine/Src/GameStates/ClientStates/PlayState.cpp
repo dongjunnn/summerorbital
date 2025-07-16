@@ -124,7 +124,7 @@ void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
                 SpriteComponent projectileSprite{
                     client.assets->GetTexture("orb"),
                     {0,0,32,32},
-                    {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 32, 32}
+                    {(int)projectilePacket.position.x, (int)projectilePacket.position.y, 10, 10}
                 };
 
                 // 1. Create a projectile locally, which gives us a NEW client-side ID

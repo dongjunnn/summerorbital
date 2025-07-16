@@ -278,7 +278,7 @@ void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& inp
             Vector2D spawnOffset = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(spawnDistance);
             Vector2D spawnPosition = playerTransform.position + spawnOffset;
             
-            Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 32, 32 });
+            Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 10, 10 });
 
             PacketProjectileCreated projectilePacket;
             projectilePacket.entityID = newProjectileID;
