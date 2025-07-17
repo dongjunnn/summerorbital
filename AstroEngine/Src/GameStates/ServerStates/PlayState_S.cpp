@@ -79,7 +79,6 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
         
         if (event.peer->data != NULL) {
             Entity playerID = (uintptr_t)event.peer->data;
-            scene.DestroyEntity(playerID); // Remove the player entity from the ECS
             scene.AppendDeletionQueue(playerID); // Tell other clients it is destroyed
             clientData.disassignPlayer(playerID);  // free up player reference (who is player #1 etc)
             scene.events()->broadcast<PlayerDisconnectEvent>(playerID);
@@ -251,6 +250,7 @@ void PlayState_S::handleUserMovementInput(Entity playerID, const PlayerInputPack
 void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& input, Server& server)
 {
     if (input.fireButtonPressed) {
+
         PlayerComponent& playerData = scene.GetEntityData<PlayerComponent>(playerID);
         
         // NOTE: In milliseconds
@@ -279,6 +279,8 @@ void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& inp
             Vector2D spawnPosition = playerTransform.position + spawnOffset;
             
             Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 10, 10 });
+
+            std::cout << "[DEBUG] new projectile id: " << newProjectileID << std::endl;
 
             PacketProjectileCreated projectilePacket;
             projectilePacket.entityID = newProjectileID;

@@ -31,3 +31,10 @@ struct LabelComponent	// text stuff requires way too much information
 		}
 	}
 };
+
+inline std::ostream& operator<<(std::ostream& os, const LabelComponent& component)
+{
+	os << "Label component currently not supported";
+
+	return os;
+}

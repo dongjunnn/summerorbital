@@ -15,4 +15,8 @@ struct AnimationComponent
     SDL_RendererFlip spriteFlip = SDL_FLIP_NONE;
 };
 
-
+inline std::ostream& operator<<(std::ostream& os, const AnimationComponent& component)
+{
+    os << "Animation component currently not supported";
+    return os;
+}

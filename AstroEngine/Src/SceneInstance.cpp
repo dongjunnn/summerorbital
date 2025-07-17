@@ -196,6 +196,8 @@ std::vector<Entity>& SceneInstance::GetDeletionQueue()
 
 void SceneInstance::AppendDeletionQueue(Entity entity)
 {
+    if (std::find(deletionQueue.begin(), deletionQueue.end(), entity) != deletionQueue.end()) { std::cout << "duplicate rejected" << std::endl; return; }
+    
     deletionQueue.emplace_back(entity);
 }
 
@@ -203,3 +205,4 @@ void SceneInstance::ClearDeletionQueue()
 {
     deletionQueue.clear();
 }
+

@@ -116,6 +116,16 @@ public:
 		
 	}
 
+	const type_info& getContainerTypeInfoByID(ComponentID id) // debug
+	{
+		return ComponentArray[id]->getType();
+	}
+
+	void printEntityDataByComponentID(ComponentID cID, Entity eID)
+	{
+		ComponentArray[cID]->printEntityData(eID);
+	}
+
 private:
 	std::array<ComponentBitSet, MAX_ENTITIES> EntityComponents;			// stores data on which entity has what component, in a bitset
 	std::unordered_map<std::type_index, ComponentID> ComponentTypeIDMap;	// connects Component type to a unique ID

@@ -59,7 +59,7 @@ public:
 		return componentManager.GetEntityData<T>(entity);
 	}
 
-	template<typename T> std::vector<T>& GetCompoenentUserData()
+	template<typename T> std::vector<T>& GetComponentUserData()
 	{
 		return componentManager.GetComponentUserData<T>();
 	}
@@ -144,6 +144,23 @@ public:
 		for (auto& [sig, entities] : viewCache)
 		{
 			entities.erase(std::remove(entities.begin(), entities.end(), entity), entities.end());
+		}
+	}
+
+	//debug
+	void dumpEntityData(Entity entity)
+	{
+		std::cout << "[DEBUG] Dumping data for entity " << entity << "\n";
+
+		ComponentBitSet sig = GetEntitySignature(entity);
+		for (int i = 0; i < MAX_COMPONENTS; i++)
+		{
+			if (sig[i])
+			{
+				const type_info& type = componentManager.getContainerTypeInfoByID(i);
+				std::cout << "[DEBUG] Component " << type.name() << ": ";
+				componentManager.printEntityDataByComponentID(i, entity);
+			}
 		}
 	}
 

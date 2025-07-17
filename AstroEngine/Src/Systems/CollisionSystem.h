@@ -144,7 +144,7 @@ public:
 			case CollisionType::ProjectileTile:
 			{
 				// projectile tile events are (projectile, tile, event)
-	
+				
 				scene.AppendDeletionQueue(colEvent.a);
 				// std::cout << "Projectile " << colEvent.a << " hit tile " << colEvent.b << std::endl;
 				break;

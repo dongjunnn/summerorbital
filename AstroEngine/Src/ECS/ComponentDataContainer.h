@@ -10,6 +10,8 @@ class ComponentDataContainer
 public:
 	virtual ~ComponentDataContainer() = default;
 	virtual void RemoveEntity(Entity entity) = 0;
+	virtual const type_info& getType() = 0;	// debug
+	virtual void printEntityData(Entity entity) = 0; //debug
 };
 
 
@@ -37,7 +39,7 @@ public:
 
 	T& GetEntityDatafromArray(Entity entity)
 	{
-		if (componentIndex[entity] <= 0 && componentIndex[entity] >= componentDense.size())
+		if (componentIndex[entity] >= componentDense.size())
 		{
 			std::cerr << "[OOPS] Catastrophic error!" << std::endl;
 			std::cout << "Entity " << entity << " tried to access something it didnt have" << std::endl;
@@ -49,7 +51,7 @@ public:
 	}
 	
 	void DeleteEntityDatafromArray(Entity entity)
-	{	
+	{	/*
 		auto it = std::find(denseIndex.begin(), denseIndex.end(), entity);	// deletion index in dense
 		if (it == denseIndex.end()) { std::cerr << "Deletion index error" << std::endl; return; }
 
@@ -64,7 +66,32 @@ public:
 		
 		// pop off last value of dense
 		denseIndex.pop_back();
+		componentDense.pop_back(); */
+
+		auto it = std::find(denseIndex.begin(), denseIndex.end(), entity);
+		if (it == denseIndex.end()) {
+			std::cerr << "Deletion index error" << std::endl;
+			return;
+		}
+
+		size_t indexToDelete = it - denseIndex.begin();
+		size_t lastIndex = denseIndex.size() - 1;
+		Entity lastEntity = denseIndex[lastIndex];
+
+		// Move last entity's data to the slot being deleted
+		componentDense[indexToDelete] = componentDense[lastIndex];
+		denseIndex[indexToDelete] = lastEntity;
+
+		// Update the moved entity's sparse index
+		componentIndex[lastEntity] = indexToDelete;
+
+		// Remove last element
 		componentDense.pop_back();
+		denseIndex.pop_back();
+
+		// Invalidate the deleted entity
+		componentAvail[entity] = false;
+		componentIndex[entity] = 0;
 	}
 
 	void RemoveEntity(Entity entity) override
@@ -80,6 +107,17 @@ public:
 	std::vector<T>& GetDense()
 	{
 		return componentDense;
+	}
+
+	const type_info& getType() override		// debug
+	{
+		return typeid(T);
+	}
+	
+	void printEntityData(Entity entity) override
+	{
+		if (componentIndex[entity] >= componentDense.size()) std::cout << "[DEBUG] * This entity does not map to dense \n";
+		else std::cout << GetEntityDatafromArray(entity) << std::endl;
 	}
 
 private:

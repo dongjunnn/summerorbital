@@ -72,9 +72,13 @@ void PlayState::handleInput(Client& client)
 {
 	SDL_PollEvent(&client.event);		
 
-	if (client.event.type == SDL_QUIT)
-		client.isRunning = false;
-	
+    if (client.event.type == SDL_QUIT)
+    {
+        // notifying server of disconnect
+        enet_peer_disconnect(client.getServerPeer(), 0);
+        client.isRunning = false;
+    }
+		
 	// Create an input packet to send to the server
 	PlayerInputPacket input; // From Packet.h
 

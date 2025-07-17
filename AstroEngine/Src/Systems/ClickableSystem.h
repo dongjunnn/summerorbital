@@ -15,7 +15,7 @@ public:
 		SDL_GetMouseState(&mouseX, &mouseY);
 		SDL_Point mousePoint = { mouseX, mouseY };
 
-		auto& clickable = scene.GetCompoenentUserData<ClickableComponent>();
+		auto& clickable = scene.GetComponentUserData<ClickableComponent>();
 		for (auto& e : clickable)
 		{
 			if (SDL_PointInRect(&mousePoint, &e.btnArea))
