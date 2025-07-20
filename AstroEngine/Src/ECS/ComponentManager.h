@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "ECS.h"
 #include "ComponentDataContainer.h"
+#include <typeinfo>
 
 // ComponentManager creates, destroys components, and assigns, unassigns components from entities
 // unfortunately this system is not cache friendly, random lookups when systems look through dense arrays :(
@@ -116,7 +117,7 @@ public:
 		
 	}
 
-	const type_info& getContainerTypeInfoByID(ComponentID id) // debug
+	const std::type_info& getContainerTypeInfoByID(ComponentID id) // debug
 	{
 		return ComponentArray[id]->getType();
 	}

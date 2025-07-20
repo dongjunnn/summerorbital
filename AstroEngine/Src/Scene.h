@@ -3,6 +3,7 @@
 #include "Components/Components.h"
 #include "ECS/EntityManager.h"
 #include "ECS/ComponentManager.h"
+#include <typeinfo>
 
 class Scene			// wrapper class?
 {
@@ -157,7 +158,7 @@ public:
 		{
 			if (sig[i])
 			{
-				const type_info& type = componentManager.getContainerTypeInfoByID(i);
+				const std::type_info& type = componentManager.getContainerTypeInfoByID(i);
 				std::cout << "[DEBUG] Component " << type.name() << ": ";
 				componentManager.printEntityDataByComponentID(i, entity);
 			}

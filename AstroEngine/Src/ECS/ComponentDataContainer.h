@@ -4,13 +4,14 @@
 #include <map>
 #include <algorithm>
 #include "ECS.h"
+#include <typeinfo>
 
 class ComponentDataContainer
 {
 public:
 	virtual ~ComponentDataContainer() = default;
 	virtual void RemoveEntity(Entity entity) = 0;
-	virtual const type_info& getType() = 0;	// debug
+	virtual const std::type_info& getType() = 0;	// debug
 	virtual void printEntityData(Entity entity) = 0; //debug
 };
 
@@ -109,7 +110,7 @@ public:
 		return componentDense;
 	}
 
-	const type_info& getType() override		// debug
+	const std::type_info& getType() override		// debug
 	{
 		return typeid(T);
 	}
