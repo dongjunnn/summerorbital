@@ -3,6 +3,7 @@
 #include "TitleState.h"
 #include "../../Packet.h" 
 #include "../../Map.h"
+#include <string>
 #include <cstring>
 
 void PlayState::onEnter(Client& client)
@@ -16,7 +17,14 @@ void PlayState::onEnter(Client& client)
     // initiating connection only on play
     ENetAddress address;
     enet_address_set_host(&address, givenAddress.c_str()); // given address from title state
-    address.port = 1234;
+
+    // Get port from environment variable, or use a default
+    const char* port_env = std::getenv("SERVER_PORT");
+    if (port_env != nullptr) {
+        address.port = std::stoi(port_env); // Convert string to integer
+    } else {
+        address.port = 1234; // Fallback for local testing
+    }
 
     std::cout << "[CLIENT] Attempting connection to " << givenAddress.c_str() << std::endl;
 

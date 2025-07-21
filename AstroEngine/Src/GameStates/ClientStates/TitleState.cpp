@@ -1,3 +1,4 @@
+#include <cstdlib> // For std::getenv
 #include "TitleState.h"
 #include "PlayState.h"
 #include "../../Components/Components.h"
@@ -14,7 +15,11 @@ void TitleState::onEnter(Client& client)
 
 	scene.SetEntityData<TransformComponent>(addressField, addrloc);
 	scene.SetEntityData<SpriteComponent>(addressField, addrspr);
-	scene.SetEntityData<LabelComponent>(addressField, { "127.0.0.1",
+	
+	const char* server_host_env = std::getenv("SERVER_HOST");
+	std::string default_address = server_host_env ? std::string(server_host_env) : "127.0.0.1";
+
+	scene.SetEntityData<LabelComponent>(addressField, { default_address,
 														client.assets->GetFont("KennyFuture_48"),
 														SDL_Color {255,255,255,255},
 														false, 160, 20, true });
