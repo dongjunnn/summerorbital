@@ -92,7 +92,6 @@ public:
 		}
 		for (Entity e : toDelete)
 		{
-			scene.DestroyEntity(e);
 			scene.AppendDeletionQueue(e);
 			std::cout << "Culling Projectile  " << e << std::endl;
 		}
