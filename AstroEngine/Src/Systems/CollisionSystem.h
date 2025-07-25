@@ -135,7 +135,7 @@ public:
 				hp -= dmg;
 				std::cout << "Player " << colEvent.a << " is hit with remaining hp: " << hp << std::endl;
 
-				// if player dies, broadcast that that play is dead
+				// if player dies, broadcast that that player is dead
 				if (hp <= 0) { scene.events()->broadcast<PlayerDiedEvent>(colEvent.a); }
 				
 				scene.AppendDeletionQueue(colEvent.b);

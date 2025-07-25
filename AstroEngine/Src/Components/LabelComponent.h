@@ -30,6 +30,28 @@ struct LabelComponent	// text stuff requires way too much information
 			cache = nullptr;
 		}
 	}
+
+	void update(std::string txt, SDL_Color color)
+	{
+		text = txt;
+		colour = color;
+
+		toUpdate = true;
+	}
+
+	void update(std::string txt)
+	{
+		text = txt;
+		
+		toUpdate = true;
+	}
+
+	void update(SDL_Color color)
+	{
+		colour = color;
+
+		toUpdate = true;
+	}
 };
 
 inline std::ostream& operator<<(std::ostream& os, const LabelComponent& component)

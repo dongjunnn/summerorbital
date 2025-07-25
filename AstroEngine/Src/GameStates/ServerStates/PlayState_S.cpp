@@ -56,20 +56,43 @@ void PlayState_S::handleEnetEvent(Server& server, ENetEvent& event)
 
     case ENET_EVENT_TYPE_RECEIVE:
     {
-        Entity playerID = (uintptr_t)event.peer->data;
-
-        PlayerInputPacket input;
-        memcpy(&input, event.packet->data, sizeof(PlayerInputPacket));
-    
-        bool& isAlive = scene.GetEntityData<PlayerComponent>(playerID).isAlive;
-
-        if (isAlive)    // they can move and shoot only when they are alive
+        switch (event.channelID)
         {
-            handleUserMovementInput(playerID, input);
-            handleUserFiring(playerID, input, server);
+        case 0:
+        {
+            Entity playerID = (uintptr_t)event.peer->data;
+
+            PlayerInputPacket input;
+            memcpy(&input, event.packet->data, sizeof(PlayerInputPacket));
+
+            bool& isAlive = scene.GetEntityData<PlayerComponent>(playerID).isAlive;
+
+            if (isAlive)    // they can move and shoot only when they are alive
+            {
+                handleUserMovementInput(playerID, input);
+                handleUserFiring(playerID, input, server);
+            }
+
+            enet_packet_destroy(event.packet);
+            break;
         }
-   
-        enet_packet_destroy(event.packet);
+        case 4:
+        {
+            if (event.packet->dataLength == sizeof(PacketMatchRestart))
+            {   
+                Entity playerID = (uintptr_t)event.peer->data;
+
+                PacketMatchRestart packet;
+                memcpy(&packet, event.packet->data, sizeof(PacketMatchRestart));
+
+                if (packet.code == 1) 
+                { 
+                    scene.events()->broadcast<MatchRestartEvent>(playerID); 
+                }
+            }
+        }
+        break;
+        }
         break;
     }
 
@@ -100,8 +123,8 @@ void PlayState_S::update(Server& server)
     collisionSystem.resolveCollision();		// resolve collisions pushes back entities if they overlap in movementsystem
 
     // now clean systems return a list of what they delete, to make sending to client easier
-    delProj = entityCleanSystem.cleanProjectiles();
-    delMisc = entityCleanSystem.clearDeletionQueue();
+    entityCleanSystem.cleanProjectiles();
+    delProj = entityCleanSystem.clearDeletionQueue();     // this collates all deletions now
 
     // setting defeated players 
     entityCleanSystem.handleDefeatedPlayers();   
@@ -275,8 +298,11 @@ void PlayState_S::handleUserFiring(Entity playerID, const PlayerInputPacket& inp
 
             Vector2D projectileVelocity = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(projectileSpeed);
 
+            /*Vector2D spawnOffset = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(spawnDistance);
+            Vector2D spawnPosition = playerTransform.position + spawnOffset;*/
+
             Vector2D spawnOffset = Vector2D(cos(shootingAngle), sin(shootingAngle)).scale(spawnDistance);
-            Vector2D spawnPosition = playerTransform.position + spawnOffset;
+            Vector2D spawnPosition = (playerTransform.position + Vector2D(16, 16)) + spawnOffset + Vector2D(-3, -3);
             
             Entity newProjectileID = scene.CreateProjectile(spawnPosition, projectileVelocity, { 10, 10 });
 

@@ -12,19 +12,22 @@ void PlayState::onEnter(Client& client)
 	map = new Map("terrain", 1, 32);
 	map->LoadMap("assets/map.map", scene, *client.assets, 25, 20);
 
-    matchPhase = new MatchPhase(scene);
+    scene.hookEventSystem(client.getEvents());
+    matchPhase = new MatchPhase(scene, client.getEvents());     // maybe static events is better
 
     // initiating connection only on play
     ENetAddress address;
     enet_address_set_host(&address, givenAddress.c_str()); // given address from title state
 
-    // Get port from environment variable, or use a default
-    const char* port_env = std::getenv("SERVER_PORT");
-    if (port_env != nullptr) {
-        address.port = std::stoi(port_env); // Convert string to integer
-    } else {
-        address.port = 1234; // Fallback for local testing
-    }
+    //// Get port from environment variable, or use a default
+    //const char* port_env = std::getenv("SERVER_PORT");
+    //if (port_env != nullptr) {
+    //    address.port = std::stoi(port_env); // Convert string to integer
+    //} else {
+    //    address.port = 1234; // Fallback for local testing
+    //}
+
+    address.port = 33153;
 
     std::cout << "[CLIENT] Attempting connection to " << givenAddress.c_str() << std::endl;
 
@@ -36,13 +39,14 @@ void PlayState::onEnter(Client& client)
         client.changeState(new TitleState());
     }
 
-    bool isConnected = false;   // maybe this has to be global soon
+    bool isConnected = false; 
 
     ENetEvent event;
     while (enet_host_service(client.getClientHost(), &event, 1000) > 0)    
     {
         if (event.type == ENET_EVENT_TYPE_RECEIVE && event.channelID == 4)
         {
+            // processing own player data from server
             PlayerState state;
             memcpy(&state, event.packet->data, sizeof(state));
 
@@ -58,8 +62,10 @@ void PlayState::onEnter(Client& client)
             scene.AddUIElement("thisPlayer", clientID);
             serverToClientEntityMap[state.entityID] = clientID;
 
+            // initalising UI
             initUI(client);
 
+            // cleaning up
             enet_packet_destroy(event.packet);
             isConnected = true;
             break;
@@ -86,7 +92,9 @@ void PlayState::handleInput(Client& client)
         enet_peer_disconnect(client.getServerPeer(), 0);
         client.isRunning = false;
     }
-		
+	
+    clickableSystem.ProcessClicks(client.event);
+
 	// Create an input packet to send to the server
 	PlayerInputPacket input; // From Packet.h
 
@@ -109,7 +117,23 @@ void PlayState::handleInput(Client& client)
 
 	// Send the input packet to the server on channel 0
 	enet_peer_send(client.getServerPeer(), 0, packet);
-	
+
+    // event listeners wld be nice
+    bool& playAgain = matchPhase->getPlayAgain();
+    if (playAgain)
+    {
+        PacketMatchRestart data;
+        data.code = 1;
+        data.id = scene.GetUIElement("thisPlayer");
+
+        ENetPacket* pkt = enet_packet_create(&data,
+            sizeof(PacketMatchRestart),
+            ENET_PACKET_FLAG_RELIABLE);
+
+        enet_peer_send(client.getServerPeer(), 4, pkt);
+        playAgain = false;
+        std::cout << "Packet sent" << std::endl;
+    }
 }
 
 void PlayState::handleEnetEvent(Client& client, ENetEvent& event)
@@ -309,10 +333,33 @@ void PlayState::initUI(Client& client)
     Entity UIHealthBorder = scene.CreateUIHealthBorder({ 0,0 }, { client.assets->GetTexture("healthBorder"), {0,0,224,32}, {0,0,224,32} });
     Entity UIHealthBar = scene.CreateUIHealthMeter({ 0,0 }, { client.assets->GetTexture("healthMeter"), {0,0,224,32}, {0,0,224,32} });
     Entity serverMsg = scene.CreateUITextField({ 592, 8 }, "Waiting for server", client.assets->GetFont("KennyFuture_12"));
+    Entity scoreCounter = scene.CreateUITextField({ 352 , 4 }, "Lobby", client.assets->GetFont("KennyFuture_24"));
+
+    // < Play Again button> this could use a bit of work
+    SpriteComponent playbtnspr = { client.assets->GetTexture("playAgainBtn"), { 0, 0, 96, 28 }, { 592, 2, 96, 28 } };
+    ClickableComponent clk = { playbtnspr.dstRect, []() { std::cerr << "Play again button not initialised properly" << std::endl;} };
+  
+    Entity PlayAgainBtn = scene.CreateUIButton({ 592, 2 }, clk, "", client.assets->GetFont("KennyFuture_12"), playbtnspr);
+
+    LabelComponent& label = scene.GetEntityData<LabelComponent>(PlayAgainBtn);
+    label.offset_y = 7;
+    label.offset_x = 6;
+    label.colour = { 0, 153, 153, 255 };
+
+    ClickableComponent& click = scene.GetEntityData<ClickableComponent>(PlayAgainBtn);
+    click.onClick = [this, PlayAgainBtn]() { scene.events()->broadcast<MatchRestartEvent>(PlayAgainBtn); };
+    click.isActive = false;
+    
+    SpriteComponent& spr = scene.GetEntityData<SpriteComponent>(PlayAgainBtn);
+    spr.alpha = 0;
+
+    // </ Play Again button>
 
     scene.AddUIElement("HealthBorder", UIHealthBorder);
     scene.AddUIElement("HealthBar", UIHealthBar);
     scene.AddUIElement("ServerMsg", serverMsg);
+    scene.AddUIElement("ScoreCounter", scoreCounter);
+    scene.AddUIElement("PlayAgainBtn", PlayAgainBtn);
 }
 
 SDL_Texture* PlayState::getShipColour(Client& client, int colour)

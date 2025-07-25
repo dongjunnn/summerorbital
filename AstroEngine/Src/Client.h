@@ -5,6 +5,7 @@
 #include <SDL_ttf.h>
 #include "AssetManager.h"
 #include "GameStates/ClientStates/ClientState.h"
+#include "Events/EventManager.h"
 
 class AssetManager;
 
@@ -21,6 +22,7 @@ public:
     SDL_Event event;
     AssetManager* assets;   // assets belongs to the client now
 
+    EventManager* getEvents() { return eventManager; }
     ENetPeer* getServerPeer() const { return serverPeer; }      // again if theres a better way
     void setServerPeer(ENetPeer* peer) { serverPeer = peer; }
 
@@ -30,6 +32,7 @@ public:
 private:
     ENetHost* clientHost;
     ENetPeer* serverPeer;
+    EventManager* eventManager = nullptr;   // one day maybe static events or smth
 
     SDL_Window* window;
 

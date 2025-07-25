@@ -12,8 +12,8 @@ public:
 		scene.events()->connect<CullProjectilesEvent, EntityCleanSystem>(&EntityCleanSystem::deleteAllProjectilesNow, this);
 	}
 
-	// cleans projectiles and returns a vector of deletions
-	std::vector<Entity> cleanProjectiles()
+	// deletes projectiles that fly out of the screen
+	void cleanProjectiles()
 	{
 		toDelete.clear();	// clears previous tick's list of entities slated for deletion
 
@@ -39,11 +39,9 @@ public:
 
 		for (Entity e : toDelete)
 		{
-			scene.DestroyEntity(e);
+			scene.AppendDeletionQueue(e);	// no more hard deletes, everything goes through deletion queue
 			std::cout << "Destroyed entity " << e << ", Projectile Count: " << projectiles.size() << std::endl;
 		}
-
-		return toDelete;
 	}
 
 	std::vector<Entity> clearDeletionQueue()	// this deletes everything in sceneInstance deletion queue

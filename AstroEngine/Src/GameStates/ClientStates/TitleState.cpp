@@ -16,8 +16,10 @@ void TitleState::onEnter(Client& client)
 	scene.SetEntityData<TransformComponent>(addressField, addrloc);
 	scene.SetEntityData<SpriteComponent>(addressField, addrspr);
 	
-	const char* server_host_env = std::getenv("SERVER_HOST");
-	std::string default_address = server_host_env ? std::string(server_host_env) : "127.0.0.1";
+	//const char* server_host_env = std::getenv("SERVER_HOST");
+	//std::string default_address = server_host_env ? std::string(server_host_env) : "127.0.0.1";
+
+	std::string default_address = "127.0.0.1";
 
 	scene.SetEntityData<LabelComponent>(addressField, { default_address,
 														client.assets->GetFont("KennyFuture_48"),

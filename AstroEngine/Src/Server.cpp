@@ -80,13 +80,13 @@ void Server::run()
     const int frameDelay = 1000 / FPS;
 
     while (isRunning) {
-        Uint32 frameStart = SDL_GetTicks(); // We can use SDL timing functions
+        Uint32 frameStart = SDL_GetTicks(); 
         // --- Network Handling ---
         ENetEvent event;
         // Check for new network events (connections, packets, disconnections)
         while (enet_host_service(serverHost, &event, 0) > 0)
         {
-            currentState->handleEnetEvent(*this, event);    // the logic is now up to server states to decide
+            currentState->handleEnetEvent(*this, event);    
         }
 
         // --- Game Logic Update ---

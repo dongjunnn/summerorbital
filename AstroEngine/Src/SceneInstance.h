@@ -47,6 +47,8 @@ public:
 
 	Entity CreateUITextField(const Vector2D position, const std::string text, TTF_Font* font);
 
+	Entity CreateUIButton(const Vector2D position, const ClickableComponent click, const std::string text, TTF_Font* font, SpriteComponent sprite);
+
 	void AddUIElement(std::string id, Entity entity);
 
 	void RemoveUIElement(std::string id);
