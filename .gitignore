@@ -1,2 +1,42 @@
-# Ignore build directory and everything in it
+# --- Build artifacts ---
 /build/
+/out/
+/bin/
+/lib/
+
+# --- CMake generated files ---
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+Makefile
+
+# --- Ninja / MSBuild / VSCode configs ---
+*.ninja
+*.sln
+*.vcxproj*
+*.vcxproj.filters
+*.vcxproj.user
+
+# --- Compiled objects/libraries ---
+*.o
+*.obj
+*.lo
+*.la
+*.a
+*.lib
+*.so
+*.dylib
+*.dll
+*.exe
+*.pdb
+
+# --- IDE / Editor files ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Logs ---
+*.log

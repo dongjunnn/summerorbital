@@ -1,0 +1,21 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": { "major": 3, "minor": 22 },
+  "configurePresets": [
+    {
+      "name": "win-mingw-cmd",
+      "displayName": "Windows (MinGW-w64 + Ninja, cmd.exe)",
+      "generator": "Ninja",
+      "binaryDir": "build/win-mingw",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_C_COMPILER": "C:/msys64/mingw64/bin/gcc.exe",
+        "CMAKE_CXX_COMPILER": "C:/msys64/mingw64/bin/g++.exe",
+        "CMAKE_PREFIX_PATH": "C:/msys64/mingw64"
+      }
+    }
+  ],
+  "buildPresets": [
+    { "name": "win-mingw-cmd", "configurePreset": "win-mingw-cmd", "jobs": 0 }
+  ]
+}

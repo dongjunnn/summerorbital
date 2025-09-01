@@ -2,11 +2,14 @@
 #include <iostream>
 #include <bitset>
 #include <unordered_map>
+#include <cstdint>
+#include <array>      // <-- add
+#include <string>     // <-- add
 
-using Entity = uint32_t;
-using ComponentID = uint8_t;
-const size_t MAX_ENTITIES = 100000;  // arbitrary max entities
-const size_t MAX_COMPONENTS = 32;  // arbitrary max components
+using Entity = std::uint32_t;   // <-- std:: scope
+using ComponentID = std::uint8_t; // <-- std:: scope
+const size_t MAX_ENTITIES = 100000;    // arbitrary max entities
+const size_t MAX_COMPONENTS = 32;      // arbitrary max components
 
 using UIElementMap = std::unordered_map<std::string, Entity>;
 
@@ -17,4 +20,4 @@ const size_t MAX_PLAYERS = 16;
 const size_t MAX_ACTIVE_PLAYERS = 2;
 
 using PlayerList = std::array<Entity, MAX_PLAYERS>;
-using ScoreList = std::array<Entity, MAX_ACTIVE_PLAYERS>;
+using ScoreList  = std::array<int, MAX_ACTIVE_PLAYERS>;   
