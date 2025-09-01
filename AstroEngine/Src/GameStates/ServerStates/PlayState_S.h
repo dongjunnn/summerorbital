@@ -23,6 +23,5 @@ private:
 	ClientData clientData;
 
 	std::vector<Entity> delProj;
-	std::vector<Entity> defPlyr;
 	std::vector<Entity> delMisc;
 };

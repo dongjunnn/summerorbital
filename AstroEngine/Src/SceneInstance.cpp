@@ -161,6 +161,25 @@ Entity SceneInstance::CreateUITextField(const Vector2D position, std::string tex
     return textField;
 }
 
+Entity SceneInstance::CreateUIButton(const Vector2D position, const ClickableComponent click, const std::string text, TTF_Font* font, const SpriteComponent sprite)
+{
+    Entity button = CreateEntity();
+    AddComponent<TransformComponent>(button);
+    AddComponent<LabelComponent>(button);
+    AddComponent<ClickableComponent>(button);
+    AddComponent<SpriteComponent>(button);
+
+    SetEntityData<TransformComponent>(button, { position });
+    SetEntityData<LabelComponent>(button, LabelComponent(text, font));
+    SetEntityData<ClickableComponent>(button, click);
+    SetEntityData<SpriteComponent>(button, sprite);
+
+    ComponentBitSet newSig = GetEntitySignature(button);		// updating views
+    UpdateViews(button, ComponentBitSet{}, newSig);
+
+    return button;
+}
+
 // adds entity to scene UI element map
 void SceneInstance::AddUIElement(std::string id, Entity entity)
 {

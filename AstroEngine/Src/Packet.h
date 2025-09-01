@@ -49,3 +49,8 @@ struct PacketProjectileDestroyed {
 struct PacketMatchPhase {
     uint8_t code;
 };
+
+struct PacketMatchRestart {
+    Entity id;
+    uint8_t code;
+};

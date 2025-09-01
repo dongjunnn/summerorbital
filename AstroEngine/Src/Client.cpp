@@ -14,6 +14,10 @@ Client::~Client() {
         enet_host_destroy(clientHost);
     }
 
+    if (eventManager) {
+        delete eventManager;
+    }
+
     SDL_DestroyWindow(window);
     SDL_DestroyRenderer(renderer);
     IMG_Quit();
@@ -38,6 +42,11 @@ bool Client::init() {
     createWindow("Spaced Out", 800, 640, false);    // also loads assets, needs a better name
     changeState(new TitleState());      // rendering is handled inside gamestates
 
+    eventManager = new EventManager();
+    if (eventManager == nullptr) {
+        std::cerr << "Event Manager setup failure" << std::endl;
+    }
+
     return true;
 }
 
@@ -55,13 +64,13 @@ void Client::changeState(ClientState* newState)
 void Client::run() {
     const int FPS = 60;
     const int frameDelay = 1000 / FPS;
-    
+
     while (isRunning) {
         Uint32 frameStart = SDL_GetTicks();
         ENetEvent event;
 
         currentState->handleInput(*this);
-        
+
         // Check for network events
         while (enet_host_service(clientHost, &event, 0) > 0)
         {
@@ -122,7 +131,10 @@ void Client::createWindow(const char* title, int width, int height, bool fullscr
     assets->AddTexture("addressField", "assets/AddressField.png", renderer);
     assets->AddTexture("connectionFailedMsg", "assets/ConnectionFailed.png", renderer);
     assets->AddTexture("shipRed", "assets/shipRed.png", renderer);
+    assets->AddTexture("playAgainBtn", "assets/PlayAgainBtn.png", renderer);
+    assets->AddTexture("test", "assets/maybe.png", renderer);
 
     assets->AddFont("KennyFuture_12", "assets/Kenney Future.ttf", renderer, 12);
+    assets->AddFont("KennyFuture_24", "assets/Kenney Future.ttf", renderer, 24);
     assets->AddFont("KennyFuture_48", "assets/Kenney Future.ttf", renderer, 48);
 }

@@ -12,9 +12,6 @@ public:
 	PlayerJoinedEvent(Entity id)
 		: Event(), id(id) {};
 
-	Entity getPlayerID() const { return id; }
-
-private:
 	Entity id;
 };
 
@@ -41,4 +38,13 @@ class CullProjectilesEvent : public Event
 {
 public:
 	CullProjectilesEvent() {}
+};
+
+class MatchRestartEvent : public Event
+{
+public:
+	MatchRestartEvent(Entity id)
+		: Event(), id(id) {};
+
+	Entity id;
 };

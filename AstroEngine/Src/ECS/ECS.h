@@ -12,3 +12,9 @@ using UIElementMap = std::unordered_map<std::string, Entity>;
 
 const float MAX_VEL = 0.4f;
 const float VEL_DECAY = 0.02f;
+
+const size_t MAX_PLAYERS = 16;
+const size_t MAX_ACTIVE_PLAYERS = 2;
+
+using PlayerList = std::array<Entity, MAX_PLAYERS>;
+using ScoreList = std::array<Entity, MAX_ACTIVE_PLAYERS>;

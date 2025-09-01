@@ -15,17 +15,22 @@ public:
 		SDL_GetMouseState(&mouseX, &mouseY);
 		SDL_Point mousePoint = { mouseX, mouseY };
 
-		auto& clickable = scene.GetComponentUserData<ClickableComponent>();
-		for (auto& e : clickable)
+		auto& view = scene.GetView<ClickableComponent>();
+
+		for (Entity btn : view)
 		{
-			if (SDL_PointInRect(&mousePoint, &e.btnArea))
+			ClickableComponent& clickable = scene.GetEntityData<ClickableComponent>(btn);
+			if (SDL_PointInRect(&mousePoint, &clickable.btnArea))
 			{
 				// debug
 				std::cout << "clicked!" << std::endl;
-				if (e.onClick)
+				if (!clickable.isActive) continue;
+				if (!clickable.onClick) 
 				{
-					e.onClick();
-				}
+					std::cerr << "[CLIENT WARN] Button function is nullptr"; 
+					continue; }
+				
+				clickable.onClick();
 			}
 		}
 	}
