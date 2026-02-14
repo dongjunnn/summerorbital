@@ -38,5 +38,12 @@ Makefile
 *.swo
 *~
 
+# --- Asset temp files ---
+*.kra
+*.tmp
+
+# --- Old backups ---
+old/
+
 # --- Logs ---
 *.log

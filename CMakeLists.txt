@@ -15,7 +15,7 @@ find_package(SDL2 REQUIRED CONFIG)
 find_package(SDL2_image REQUIRED CONFIG)
 find_package(SDL2_ttf REQUIRED CONFIG)
 
-# --- ENet discovery (as you had) ---
+# --- ENet discovery ---
 find_package(ENet CONFIG QUIET)
 find_package(enet CONFIG QUIET)
 if(NOT TARGET ENet::ENet)
@@ -58,6 +58,7 @@ target_include_directories(astro_engine PUBLIC "${CMAKE_SOURCE_DIR}/AstroEngine"
 # IMPORTANT: do NOT link SDL2main; define SDL_MAIN_HANDLED instead
 target_compile_definitions(astro_engine PUBLIC SDL_MAIN_HANDLED)
 
+# Link core dependencies into the engine
 target_link_libraries(astro_engine
   PUBLIC
     SDL2::SDL2
@@ -80,9 +81,11 @@ endfunction()
 add_executable(summerorbital_app
   AstroEngine/Src/main.cpp
 )
-# also define here, just in case main.cpp includes SDL before engine headers
-target_compile_definitions(summerorbital_app PRIVATE SDL_MAIN_HANDLED)
+
+# Link the necessary libraries to the executable
 target_link_libraries(summerorbital_app PRIVATE astro_engine)
+
+# Copy assets next to built binaries
 copy_assets(summerorbital_app)
 
 # Warnings (optional)

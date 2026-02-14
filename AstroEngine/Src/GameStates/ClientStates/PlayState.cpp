@@ -27,7 +27,7 @@ void PlayState::onEnter(Client& client)
     //    address.port = 1234; // Fallback for local testing
     //}
 
-    address.port = 33153;
+    address.port = 1234;
 
     std::cout << "[CLIENT] Attempting connection to " << givenAddress.c_str() << std::endl;
 
